@@ -4,11 +4,32 @@ on:
   push:
     branches:
       - task-1  
-
+permissions:
+      id-token: write # This is required for aws oidc connection
+      contents: read # This is required for actions/checkout
+env:
+  TF_LOG: INFO
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  
 jobs:
   terraform-check:
     runs-on: ubuntu-latest
     steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Print debug info
+        run: |
+          echo "AWS_REGION: ${{ secrets.AWS_REGION }}"
+          echo "AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}"
+
+      - name: Configure AWS credentials from AWS account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: GitHub-OIDC-TERRAFORM
+
       - name: Checkout code
         uses: actions/checkout@v2
 
