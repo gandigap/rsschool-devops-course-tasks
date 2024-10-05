@@ -38,12 +38,12 @@ jobs:
       - name: Terraform init     
         run: terraform init
 
-      - name: Import existing resources
-        run: |
-          terraform import aws_s3_bucket.my-test-bucket-rs my-test-bucket-rs || echo "Bucket does not exist, will create it."
-          terraform import aws_iam_openid_connect_provider.github_actions_IODC_provider arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:oidc-provider/token.actions.githubusercontent.com || echo "OIDC Provider does not exist, will create it."
-          terraform import aws_iam_policy.github_actions_policy arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:policy/GithubActionsPolicy || echo "Policy does not exist, will create it."
-          terraform import aws_iam_role.terraform_github_actions_role GithubActionsRole || echo "IAM Role does not exist, will create it."
+      # - name: Import existing resources
+      #   run: |
+      #     terraform import aws_s3_bucket.my-test-bucket-rs my-test-bucket-rs || echo "Bucket does not exist, will create it."
+      #     terraform import aws_iam_openid_connect_provider.github_actions_IODC_provider arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:oidc-provider/token.actions.githubusercontent.com || echo "OIDC Provider does not exist, will create it."
+      #     terraform import aws_iam_policy.github_actions_policy arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:policy/GithubActionsPolicy || echo "Policy does not exist, will create it."
+      #     terraform import aws_iam_role.terraform_github_actions_role GithubActionsRole || echo "IAM Role does not exist, will create it."
 
       - name: Create terraform cache
         uses: actions/cache@v2
