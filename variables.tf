@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "Default AWS region"
   type        = string
-  default     = "us-east-1"
+  default     = "eu-north-1"
 }
 
 variable "terraform_github_actions_role_name" {

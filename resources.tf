@@ -1,12 +1,4 @@
-resource "aws_s3_bucket" "my-test-bucket-rs" {
-  bucket        = "my-test-bucket-rs"
-  force_destroy = true
-
-  tags = {
-    Name        = "My bucket"
-    Environment = "Dev"
-  }
-}
+resource "aws_s3_bucket" "my-test-bucket-rs" {}
 
 resource "aws_iam_openid_connect_provider" "github_actions_IODC_provider" {
   url             = "https://token.actions.githubusercontent.com"
