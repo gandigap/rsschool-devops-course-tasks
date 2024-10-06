@@ -1,103 +1,103 @@
-name: Terraform Deployment
+# name: Terraform Deployment
 
-on:
-  push:
-    branches:
-      - task-1  
-permissions:
-      id-token: write # This is required for aws oidc connection
-      contents: read # This is required for actions/checkout
-env:
-  TF_LOG: INFO
-  AWS_REGION: ${{ secrets.AWS_REGION }}
+# on:
+#   push:
+#     branches:
+#       - task-1  
+# permissions:
+#       id-token: write # This is required for aws oidc connection
+#       contents: read # This is required for actions/checkout
+# env:
+#   TF_LOG: INFO
+#   AWS_REGION: ${{ secrets.AWS_REGION }}
 
-jobs:
-  terraform-check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
+# jobs:
+#   terraform-check:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Git checkout
+#         uses: actions/checkout@v3
 
-      - name: Print debug info
-        run: |
-          echo "AWS_REGION: ${{ secrets.AWS_REGION }}"
-          echo "AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}"
+#       - name: Print debug info
+#         run: |
+#           echo "AWS_REGION: ${{ secrets.AWS_REGION }}"
+#           echo "AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}"
 
-      - name: Configure AWS credentials from AWS account
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-session-name: GitHub-OIDC-TERRAFORM
+#       - name: Configure AWS credentials from AWS account
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+#           aws-region: ${{ secrets.AWS_REGION }}
+#           role-session-name: GitHub-OIDC-TERRAFORM
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.9.6  
+#       - name: Set up Terraform
+#         uses: hashicorp/setup-terraform@v2
+#         with:
+#           terraform_version: 1.9.6  
 
-      - name: Terraform init     
-        run: terraform init
+#       - name: Terraform init     
+#         run: terraform init
 
-      # - name: Import existing resources
-      #   run: |
-      #     terraform import aws_s3_bucket.my-test-bucket-rs my-test-bucket-rs || echo "Bucket does not exist, will create it."
-      #     terraform import aws_iam_openid_connect_provider.github_actions_IODC_provider arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:oidc-provider/token.actions.githubusercontent.com || echo "OIDC Provider does not exist, will create it."
-      #     terraform import aws_iam_policy.github_actions_policy arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:policy/GithubActionsPolicy || echo "Policy does not exist, will create it."
-      #     terraform import aws_iam_role.terraform_github_actions_role GithubActionsRole || echo "IAM Role does not exist, will create it."
+#       # - name: Import existing resources
+#       #   run: |
+#       #     terraform import aws_s3_bucket.my-test-bucket-rs my-test-bucket-rs || echo "Bucket does not exist, will create it."
+#       #     terraform import aws_iam_openid_connect_provider.github_actions_IODC_provider arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:oidc-provider/token.actions.githubusercontent.com || echo "OIDC Provider does not exist, will create it."
+#       #     terraform import aws_iam_policy.github_actions_policy arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:policy/GithubActionsPolicy || echo "Policy does not exist, will create it."
+#       #     terraform import aws_iam_role.terraform_github_actions_role GithubActionsRole || echo "IAM Role does not exist, will create it."
 
-      - name: Create terraform cache
-        uses: actions/cache@v2
-        with:
-          path: .terraform*
-          key: terraform-cache-${{ runner.os }}-${{ github.run_id }}
+#       - name: Create terraform cache
+#         uses: actions/cache@v2
+#         with:
+#           path: .terraform*
+#           key: terraform-cache-${{ runner.os }}-${{ github.run_id }}
 
-      - name: Terraform Format Check
-        run: terraform fmt -check
+#       - name: Terraform Format Check
+#         run: terraform fmt -check
 
-  terraform-plan:
-    runs-on: ubuntu-latest
-    needs: terraform-check
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+#   terraform-plan:
+#     runs-on: ubuntu-latest
+#     needs: terraform-check
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-session-name: GitHub-OIDC-TERRAFORM
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+#           aws-region: ${{ secrets.AWS_REGION }}
+#           role-session-name: GitHub-OIDC-TERRAFORM
 
-      - name: Restore terraform cache
-        uses: actions/cache@v2
-        with:
-          path: .terraform*
-          key: terraform-cache-${{ runner.os }}-${{ github.run_id }}
-          fail-on-cache-miss: true
+#       - name: Restore terraform cache
+#         uses: actions/cache@v2
+#         with:
+#           path: .terraform*
+#           key: terraform-cache-${{ runner.os }}-${{ github.run_id }}
+#           fail-on-cache-miss: true
 
-      - name: Terraform Plan
-        run: terraform plan -input=false
+#       - name: Terraform Plan
+#         run: terraform plan -input=false
 
-  terraform-apply:
-    runs-on: ubuntu-latest
-    needs: terraform-plan
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+#   terraform-apply:
+#     runs-on: ubuntu-latest
+#     needs: terraform-plan
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-session-name: GitHub-OIDC-TERRAFORM
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+#           aws-region: ${{ secrets.AWS_REGION }}
+#           role-session-name: GitHub-OIDC-TERRAFORM
 
-      - name: Restore terraform cache
-        uses: actions/cache@v2
-        with:
-          path: .terraform*
-          key: terraform-cache-${{ runner.os }}-${{ github.run_id }}
-          fail-on-cache-miss: true
+#       - name: Restore terraform cache
+#         uses: actions/cache@v2
+#         with:
+#           path: .terraform*
+#           key: terraform-cache-${{ runner.os }}-${{ github.run_id }}
+#           fail-on-cache-miss: true
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+#       - name: Terraform Apply
+#         run: terraform apply -auto-approve
