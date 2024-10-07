@@ -1,5 +1,4 @@
-resource "aws_s3_bucket" "my-test-bucket-rs" {}
-
+# IAM OpenID Connect Provider for GitHub Actions
 resource "aws_iam_openid_connect_provider" "github_actions_IODC_provider" {
   url             = "https://token.actions.githubusercontent.com"
   client_id_list  = ["sts.amazonaws.com"]
@@ -10,7 +9,7 @@ resource "aws_iam_openid_connect_provider" "github_actions_IODC_provider" {
   }
 }
 
-
+# Assume Role Policy Document for GitHub Actions
 data "aws_iam_policy_document" "github_actions_assume_role_policy" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -19,11 +18,13 @@ data "aws_iam_policy_document" "github_actions_assume_role_policy" {
       type        = "Federated"
       identifiers = [aws_iam_openid_connect_provider.github_actions_IODC_provider.arn]
     }
+
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
     }
+
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
@@ -32,7 +33,7 @@ data "aws_iam_policy_document" "github_actions_assume_role_policy" {
   }
 }
 
-# Create role
+# Create IAM Role for GitHub Actions
 resource "aws_iam_role" "terraform_github_actions_role" {
   name               = var.terraform_github_actions_role_name
   assume_role_policy = data.aws_iam_policy_document.github_actions_assume_role_policy.json
@@ -42,8 +43,7 @@ resource "aws_iam_role" "terraform_github_actions_role" {
   }
 }
 
-
-# Attach policies
+# Attach Required Policies to IAM Role
 resource "aws_iam_role_policy_attachment" "attach_policies" {
   for_each   = toset(var.required_iam_policies)
   role       = aws_iam_role.terraform_github_actions_role.name

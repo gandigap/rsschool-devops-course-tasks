@@ -10,7 +10,10 @@ terraform {
     bucket  = "my-test-bucket-rs"
     key     = "terraform.tfstate"
     region  = "eu-north-1"
-    encrypt = "true"
+    encrypt = true
   }
 }
 
+module "resources" {
+  source = "./resources"
+}
