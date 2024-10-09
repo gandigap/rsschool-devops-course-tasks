@@ -15,5 +15,6 @@ terraform {
 }
 
 module "resources" {
-  source = "./resources"
+  source           = "./resources"
+  bastion_key_name = var.bastion_key_name
 }

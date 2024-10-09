@@ -1,52 +1,44 @@
-# Security Group for Public Subnets
-resource "aws_security_group" "public_sg" {
-  vpc_id = aws_vpc.main.id
-
-  # Allow inbound traffic on port 80 (HTTP) and port 443 (HTTPS)
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_security_group" "bastion_sg" {
+  name        = "bastion-sg"
+  description = "Allow SSH access to bastion host"
+  vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port   = 443
-    to_port     = 443
+    description = "SSH access"
+    from_port   = 22
+    to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["45.128.133.202/32"]
   }
 
-  # Allow outbound traffic
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1" # All traffic
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
-    Name = "Public Security Group"
+    Name = "Bastion security group"
   }
 }
 
-# Security Group for Private Subnets
 resource "aws_security_group" "private_sg" {
-  vpc_id = aws_vpc.main.id
+  name        = "private-sg"
+  description = "Allow access from Bastion Host"
+  vpc_id      = aws_vpc.main.id
 
-  # Allow inbound traffic from the public security group (for example, for SSH)
   ingress {
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    security_groups = [aws_security_group.public_sg.id]
+    security_groups = [aws_security_group.bastion_sg.id]
   }
 
-  # Allow outbound traffic
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1" # All traffic
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 

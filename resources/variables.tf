@@ -23,3 +23,14 @@ variable "required_iam_policies" {
     "arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess"
   ]
 }
+
+variable "bastion_instance_type" {
+  description = "Instance type for the bastion host"
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "bastion_key_name" {
+  description = "Key pair name for the bastion host"
+  type        = string
+}
