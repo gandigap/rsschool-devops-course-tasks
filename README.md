@@ -44,3 +44,14 @@ https://github.com/rolling-scopes-school/tasks/blob/master/devops/modules/1_basi
 - AWS_REGION
 - AWS_ROLE_ARN
 - AWS_SECRET_ACCESS_KEY
+
+### Start commands in cmd
+
+```
+terraform init
+terraform plan
+terraform apply
+
+```
+
+#### And if you need NAT gateway your should delete comments from nat.tf
