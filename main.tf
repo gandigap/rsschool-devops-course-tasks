@@ -7,14 +7,14 @@ terraform {
   }
 
   backend "s3" {
-    bucket  = "my-test-bucket-rs"
+    bucket  = "myrsdevopsbucket"
     key     = "terraform.tfstate"
     region  = "eu-north-1"
     encrypt = true
   }
 }
 
-module "resources" {
-  source           = "./resources"
-  bastion_key_name = var.bastion_key_name
-}
+# module "resources" {
+#   source           = "./resources"
+#   bastion_key_name = var.bastion_key_name
+# }
