@@ -34,3 +34,13 @@ variable "bastion_key_name" {
   description = "Key pair name for the bastion host"
   type        = string
 }
+
+variable "ssh_pubkey_name" {
+  description = "Name of SSH key pair"
+  default     = "rs_devops"
+}
+
+variable "ssh_pubkey_path" {
+  description = "Path to an SSH public key"
+  default     = "~/.ssh/rs_devops.pub"
+}

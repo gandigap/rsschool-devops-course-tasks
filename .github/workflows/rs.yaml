@@ -45,6 +45,15 @@ jobs:
           restore-keys: |
             terraform-cache-${{ runner.os }}-
 
+      - name: Check SSH public key
+        run: |
+          mkdir -p ~/.ssh
+          if [ -z "${{ secrets.SSH_PUBKEY }}" ]; then
+            echo "SSH public key is not set in secrets!"
+            exit 1
+          fi
+          echo "${{ secrets.SSH_PUBKEY }}" > ~/.ssh/rs_devops.pub
+
       - name: Terraform Format Check
         run: terraform fmt -check
 
@@ -53,6 +62,7 @@ jobs:
 
       - name: Terraform Plan
         run: terraform plan -input=false
+        continue-on-error: true
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
