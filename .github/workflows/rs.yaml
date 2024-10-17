@@ -1,0 +1,68 @@
+name: Terraform Deployment
+
+on:
+  push:
+    branches:
+      - task-2
+
+permissions:
+  id-token: write 
+  contents: read 
+
+env:
+  TF_LOG: INFO
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+  terraform-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Print debug info
+        run: |
+          echo "AWS_REGION: ${{ secrets.AWS_REGION }}"
+          echo "AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: GitHub-OIDC-TERRAFORM
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.9.6  
+
+      - name: Create and restore Terraform cache
+        uses: actions/cache@v2
+        with:
+          path: .terraform*
+          key: terraform-cache-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            terraform-cache-${{ runner.os }}-
+
+      - name: Check SSH public key
+        run: |
+          mkdir -p ~/.ssh
+          if [ -z "${{ secrets.SSH_PUBKEY }}" ]; then
+            echo "SSH public key is not set in secrets!"
+            exit 1
+          fi
+          echo "${{ secrets.SSH_PUBKEY }}" > ~/.ssh/rs_devops.pub
+
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -input=false
+        continue-on-error: true
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
