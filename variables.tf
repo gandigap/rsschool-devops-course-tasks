@@ -54,11 +54,11 @@ variable "private_subnet_2_cidr" {
   default     = "10.0.4.0/24"
 }
 
-variable "availability_zones" {
-  description = "Availability Zones"
-  type        = list(string)
-  default     = ["eu-north-1a", "eu-north-1b"]
-}
+# variable "availability_zones" {
+#   description = "Availability Zones"
+#   type        = list(string)
+#   default     = ["eu-north-1a", "eu-north-1b"]
+# }
 
 # Task 2: EC2 variables
 
