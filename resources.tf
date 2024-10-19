@@ -5,7 +5,7 @@
 resource "aws_iam_openid_connect_provider" "gha_oidc" {
   url             = "https://token.actions.githubusercontent.com"
   client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = ["ffffffffffffffffffffffffffffffffffffffff"] # not required
+  thumbprint_list = ["ffffffffffffffffffffffffffffffffffffffff"]
 }
 
 # Prepare OIDC policy

@@ -13,8 +13,3 @@ terraform {
     encrypt = true
   }
 }
-
-# module "resources" {
-#   source           = "./resources"
-#   bastion_key_name = var.bastion_key_name
-# }
