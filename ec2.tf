@@ -1,5 +1,6 @@
 # Task 2: Networking Resources
 
+
 # Deploy EC2 Bastion Host / NAT Instance
 resource "aws_instance" "nat_instance" {
   ami           = var.ec2_amazon_linux_ami
@@ -25,7 +26,6 @@ resource "aws_instance" "nat_instance" {
   user_data_replace_on_change = true
 }
 
-
 # Task 3: k3s Setup
 
 # Create a k3s Server instance in Private subnet #1
@@ -49,5 +49,6 @@ resource "aws_instance" "k3s_agent" {
   key_name               = aws_key_pair.ssh_key.key_name
   tags = {
     Name = "K3s Agent Instance"
+
   }
 }

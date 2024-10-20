@@ -23,9 +23,12 @@ output "network_interface_id" {
   value = aws_network_interface.nat_interface.id
 }
 
+
 output "eip" {
   value = aws_eip.public_ip.public_ip
 }
+
+
 
 output "nat_instance_public_ip_address" {
   value = aws_instance.nat_instance.public_ip
@@ -34,6 +37,7 @@ output "nat_instance_public_ip_address" {
 output "nat_instance_private_ip_address" {
   value = aws_instance.nat_instance.private_ip
 }
+
 
 # Task 3: k3s Setup
 

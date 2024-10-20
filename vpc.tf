@@ -1,4 +1,6 @@
+
 # Task 2: Networking Resources
+
 
 # Deploy VPC
 resource "aws_vpc" "main_vpc" {

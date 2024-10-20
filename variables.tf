@@ -60,11 +60,13 @@ variable "availability_zones" {
   default     = ["eu-north-1a", "eu-north-1b"]
 }
 
+
 # Task 2: EC2 variables
 
 variable "ec2_amazon_linux_ami" {
   description = "EC2 Instance Image for Bastion Host and Testing"
   default     = "ami-070fe338fb2265e00"
+
 }
 
 variable "ssh_pk" {
@@ -77,9 +79,11 @@ variable "ssh_inbound_ip" {
   default     = ["0.0.0.0/0"]
 }
 
+
 # Task 3: k3s Setup
 
 variable "token" {
   description = "k3s Server token for k3s Agents"
   type        = string
 }
+
