@@ -1,0 +1,5 @@
+1 terminal - kubectl nodes from locale machine
+2 terminal - kubectl nodes from remote k3s_server
+3 terminal - kubectl podes from remote k3s_server
+4 terminal -  k3s_agent
+5 terminal -  SOCKS5 Proxy to Access the Kubernetes API from locale machine
