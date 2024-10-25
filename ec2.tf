@@ -50,6 +50,12 @@ resource "aws_instance" "k3s_agent" {
   key_name               = aws_key_pair.ssh_key.key_name
   tags = {
     Name = "K3s Agent Instance"
-
   }
+
+  user_data = <<-EOL
+    #!/bin/bash
+    export server_addr=${aws_instance.k3s_server.private_ip}
+    export token=${var.token}
+    $(cat k3s_agent.sh)
+  EOL
 }
