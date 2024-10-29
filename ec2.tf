@@ -1,3 +1,6 @@
+# Task 2: Networking Resources
+
+
 # Deploy EC2 Bastion Host / NAT Instance
 resource "aws_instance" "nat_instance" {
   ami           = var.ec2_amazon_linux_ami
@@ -23,14 +26,29 @@ resource "aws_instance" "nat_instance" {
   user_data_replace_on_change = true
 }
 
-# Create a Test EC2 instance in Private nerwork to check all the routing
-resource "aws_instance" "test_ec2" {
+# Task 3: k3s Setup
+
+# Create a k3s Server instance in Private subnet #1
+resource "aws_instance" "k3s_server" {
+  ami                    = var.ec2_amazon_linux_ami
+  instance_type          = "t3.micro"
+  subnet_id              = aws_subnet.private_subnet_1.id
+  vpc_security_group_ids = [aws_security_group.k3s_server_sg.id]
+  key_name               = aws_key_pair.ssh_key.key_name
+  tags = {
+    Name = "k3s Server Instance"
+  }
+}
+
+# Create a k3s Agent instance in Private subnet #2
+resource "aws_instance" "k3s_agent" {
   ami                    = var.ec2_amazon_linux_ami
   instance_type          = "t3.micro"
   subnet_id              = aws_subnet.private_subnet_2.id
-  vpc_security_group_ids = [aws_security_group.test_ec2_sg.id]
+  vpc_security_group_ids = [aws_security_group.k3s_agent_sg.id]
   key_name               = aws_key_pair.ssh_key.key_name
   tags = {
-    Name = "Test Instance"
+    Name = "K3s Agent Instance"
+
   }
 }

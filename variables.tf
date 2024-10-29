@@ -54,11 +54,19 @@ variable "private_subnet_2_cidr" {
   default     = "10.0.4.0/24"
 }
 
+variable "availability_zones" {
+  description = "Availability Zones"
+  type        = list(string)
+  default     = ["eu-north-1a", "eu-north-1b"]
+}
+
+
 # Task 2: EC2 variables
 
 variable "ec2_amazon_linux_ami" {
   description = "EC2 Instance Image for Bastion Host and Testing"
-  default     = "ami-097c5c21a18dc59ea"
+  default     = "ami-070fe338fb2265e00"
+
 }
 
 variable "ssh_pk" {
@@ -70,3 +78,12 @@ variable "ssh_inbound_ip" {
   description = "Specify CIDR block to limit inbound ssh traffic to the NAT Instance/Bastion Host"
   default     = ["0.0.0.0/0"]
 }
+
+
+# Task 3: k3s Setup
+
+variable "token" {
+  description = "k3s Server token for k3s Agents"
+  type        = string
+}
+
