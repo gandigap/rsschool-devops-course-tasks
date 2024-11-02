@@ -8,15 +8,16 @@
 ├── eip.tf
 ├── eni.tf
 ├── igw.tf
+├── k3s_server.sh
 ├── keys.tf
 ├── main.tf
-├── network_acls.tf
+├── nacl.tf
 ├── outputs.tf
 ├── README.md
 ├── resources.tf
-├── routing_tables.tf
+├── routes.tf
 ├── screenshots
-├── sg.tf
+├── security-group.tf
 ├── subnets.tf
 ├── variables.tf
 └── vpc.tf
@@ -62,16 +63,16 @@
 * **keys.tf**
 
   Manages SSH keys or API keys used for authentication with resources. This file may define key pairs for EC2 instances or service account keys for API access.
-* **network_acls.tf**
+* **nacl.tf**
 
   Configures Network Access Control Lists (ACLs) for subnets. This file defines rules for inbound and outbound traffic at the subnet level.
 * **outputs.tf**
 
   Defines output variables that provide information about the resources after they are created. Outputs are useful for referencing resource attributes in other configurations or modules.
-* **routing_tables.tf**
+* **routes.tf**
 
   Configures routing tables for the VPC. It defines the routes that control the traffic flow between subnets and to the internet or other VPCs.
-* **sg.tf**
+* **security-group.tf**
 
   Manages Security Groups (SGs) for the resources. This includes defining rules for inbound and outbound traffic to control access to EC2 instances and other resources.
 * **subnets.tf**
@@ -123,3 +124,9 @@ Host k3s_agent
  - Run `kubectl get nodes` to check.
 
  ## PS. December-man helped me with this task and he allowed to use his configuration. I will try to refactor code in future. But he saved me in this hard time
+
+ ## Task 4 
+ - Complete command in terminal `terrafor apply`
+ - Connect to k3s_server use `ssh -L 8080:localhost:8080 k3s_server`
+ - Complete command `kubectl --namespace jenkins port-forward svc/my-jenkins 8080:8080` for connect to jenkins in browser on local machine
+ - Open in browser page `http://localhost:8080` and run you project
