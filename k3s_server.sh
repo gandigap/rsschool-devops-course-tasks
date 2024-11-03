@@ -10,7 +10,6 @@ while ! systemctl is-active --quiet sshd && [ $attempt_num -le $max_attempts ]; 
     attempt_num=$((attempt_num + 1))
 done
 
-
 # Проверка доступности yum и curl
 if command -v yum &> /dev/null && command -v curl &> /dev/null; then
     # Включение SELinux и установка необходимого пакета
@@ -19,6 +18,9 @@ if command -v yum &> /dev/null && command -v curl &> /dev/null; then
 
     # Установка Git
     sudo yum install git -y
+
+    # Установка Java
+    sudo yum install -y java-17-amazon-corretto-devel
 
     # Установка K3s
     curl -sfL https://get.k3s.io | K3S_TOKEN=${token} sh -s -
@@ -165,31 +167,147 @@ EOF
     helm repo update
     helm install my-jenkins jenkins/jenkins \
       --namespace jenkins \
-      --set controller.debug=true \
-      --set persistence.existingClaim=jenkins-pvc
+      --set persistence.enabled=true \
+      --set persistence.existingClaim=jenkins-pvc \
+      --set controller.debug=true
 
     # Ожидание успешного развертывания Jenkins
     echo "Waiting for Jenkins to be ready..."
     attempt_num=1
+    # while [[ $attempt_num -le $max_attempts ]]; do
+    #     sleep 10
+    #     kubectl get pods -n jenkins | grep my-jenkins | grep -q Running
+    #     if [[ $? -eq 0 ]]; then
+    #         echo "Jenkins is now running."
+    #         break
+    #     fi
+    #     echo "Jenkins is not ready yet. Attempt $attempt_num of $max_attempts."
+    #     attempt_num=$((attempt_num + 1))
+    # done
+
+    # if [[ $attempt_num -gt $max_attempts ]]; then
+    #     echo "Jenkins did not start in the expected time."
+    #     exit 1
+    # fi
     while [[ $attempt_num -le $max_attempts ]]; do
-        sleep 10
-        kubectl get pods -n jenkins | grep my-jenkins | grep -q Running
-        if [[ $? -eq 0 ]]; then
-            echo "Jenkins is now running."
+        STATUS=$(kubectl get pod my-jenkins-0 -n jenkins -o jsonpath='{.status.containerStatuses[*].ready}')
+        if [[ "$STATUS" == "true true" ]]; then
+            echo "Both containers in the Jenkins pod are ready."
             break
         fi
-        echo "Jenkins is not ready yet. Attempt $attempt_num of $max_attempts."
+        echo "Waiting for both containers in the Jenkins pod to be ready... Attempt $attempt_num of $max_attempts."
+        sleep 10
         attempt_num=$((attempt_num + 1))
     done
 
     if [[ $attempt_num -gt $max_attempts ]]; then
-        echo "Jenkins did not start in the expected time."
+        echo "Jenkins pod did not become ready in the expected time."
         exit 1
     fi
+    
 
     # Проверка успешного развертывания Jenkins
     kubectl get pods -n jenkins
 
+    # Порт-форвардинг для доступа к Jenkins
+    echo "Setting up port forwarding to access Jenkins..."
+    kubectl port-forward --namespace jenkins svc/my-jenkins 8080:8080 &
+    sleep 5  # Даем время на инициализацию
+
+    # Создание и запуск Jenkins freestyle проекта
+    JENKINS_POD=$(kubectl get pods -n jenkins -l "app.kubernetes.io/instance=my-jenkins" -o jsonpath="{.items[0].metadata.name}")
+    JENKINS_PASSWORD=$(kubectl exec --namespace jenkins -it svc/my-jenkins -c jenkins -- /bin/cat /run/secrets/additional/chart-admin-password)
+
+    # Проверка на успешное получение пароля
+    if [ -n "$JENKINS_PASSWORD" ]; then
+        echo "Jenkins admin password: $JENKINS_PASSWORD"
+    else
+        echo "Failed to retrieve Jenkins admin password."
+        exit 1
+    fi
+
+    # Установка Jenkins CLI
+    JENKINS_CLI_JAR=jenkins-cli.jar
+
+   # Проверка наличия jenkins-cli.jar
+    if [ ! -f "$JENKINS_CLI_JAR" ]; then
+        echo "Jenkins CLI jar not found. Waiting for Jenkins to be ready..."
+
+        # Цикл ожидания для проверки доступности Jenkins
+        attempt_num=1
+        while ! curl -s http://localhost:8080/ &> /dev/null && [ $attempt_num -le $max_attempts ]; do
+            echo "Waiting for Jenkins to be ready..."
+            sleep 10
+            attempt_num=$((attempt_num + 1))
+        done
+
+        # Проверка успешности ожидания
+        if [ $attempt_num -gt $max_attempts ]; then
+            echo "Jenkins did not become ready in the expected time."
+            exit 1
+        fi
+
+        echo "Downloading Jenkins CLI..."
+        curl -L -o "$JENKINS_CLI_JAR" http://localhost:8080/jnlpJars/jenkins-cli.jar
+
+        # Проверка целостности jar файла
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to download Jenkins CLI jar."
+            exit 1
+        elif [ ! -f "$JENKINS_CLI_JAR" ]; then
+            echo "Error: Jenkins CLI jar file does not exist."
+            exit 1
+        else
+            # Проверяем тип файла
+            FILE_TYPE=$(file "$JENKINS_CLI_JAR")
+            if ! echo "$FILE_TYPE" | grep -q "Java archive"; then
+                echo "Error: The downloaded file is not a valid jar. Detected type: $FILE_TYPE"
+                exit 1
+            fi
+        fi
+
+        echo "Jenkins CLI jar downloaded successfully."
+
+        # Вывод содержимого файла jenkins-cli.jar
+        echo "Contents of jenkins-cli.jar:"
+        hexdump -C "$JENKINS_CLI_JAR" | head -n 20  # Показать первые 20 строк в hex формате
+        echo "Output of jenkins-cli.jar completed."
+    fi
+
+    echo "Creating and running freestyle project..."
+
+    cat <<EOF > job-config.xml
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Simple Hello World project</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>echo "Hello world"</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
+EOF
+
+    java -jar "$JENKINS_CLI_JAR" -s http://localhost:8080/ -auth admin:$JENKINS_PASSWORD create-job hello-world < job-config.xml
+    java -jar "$JENKINS_CLI_JAR" -s http://localhost:8080/ -auth admin:$JENKINS_PASSWORD build hello-world
+
+    echo "Fetching job log..."
+
+    # Проверяем лог
+    # java -jar /jenkins-cli.jar -s http://localhost:8080/ -auth admin:$JENKINS_PASSWORD console hello-world
+    
 else
     echo "yum or curl is not available, aborting."
     exit 1
