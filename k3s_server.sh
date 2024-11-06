@@ -3,100 +3,61 @@
 max_attempts=12
 attempt_num=1
 
-while ! systemctl is-active --quiet sshd && [ $attempt_num -le $max_attempts ]; do
-    echo "Waiting for SSH service to be active..."
-    sleep 10
-    attempt_num=$((attempt_num + 1))
-done
+wait_for_condition() {
+    local condition="$1"
+    local max_attempts=$2
+    local attempt_num=1
+    while ! eval "$condition" && [ $attempt_num -le $max_attempts ]; do
+        echo "Waiting for condition: $condition..."
+        sleep 10
+        attempt_num=$((attempt_num + 1))
+    done
+}
 
-if command -v yum &> /dev/null && command -v curl &> /dev/null; then
-    sudo amazon-linux-extras enable selinux-ng
-    sudo yum install selinux-policy-targeted -y
-    sudo yum install git -y
-    sudo yum install -y java-17-amazon-corretto-devel
+if command -v yum &>/dev/null && command -v curl &>/dev/null; then
+    sudo amazon-linux-extras enable selinux-ng && \
+    sudo yum install -y selinux-policy-targeted git java-17-amazon-corretto-devel
 
-    curl -sfL https://get.k3s.io | K3S_TOKEN=${token} sh -s -
-    if [ $? -ne 0 ]; then
+    if ! curl -sfL https://get.k3s.io | K3S_TOKEN="${token}" sh -s -; then
         echo "K3s installation failed."
         exit 1
     fi
     echo "K3s installation succeeded."
 
-    attempt_num=1
-    while [ ! -f /etc/rancher/k3s/k3s.yaml ] && [ $attempt_num -le $max_attempts ]; do
-        echo "Waiting for kubeconfig to be available..."
-        sleep 10
-        attempt_num=$((attempt_num + 1))
-    done
-
-    if [ -f /etc/rancher/k3s/k3s.yaml ]; then
-        echo "Kubeconfig is now available at /etc/rancher/k3s/k3s.yaml."
-    else
+    wait_for_condition "[ -f /etc/rancher/k3s/k3s.yaml ]" $max_attempts
+    if [ ! -f /etc/rancher/k3s/k3s.yaml ]; then
         echo "Kubeconfig was not found after waiting."
         exit 1
     fi
+    echo "Kubeconfig is now available at /etc/rancher/k3s/k3s.yaml."
 
     export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-
     echo "KUBECONFIG has been set to: $KUBECONFIG"
 
-    echo "Checking Kubernetes cluster info..."
-    kubectl cluster-info
-    if [ $? -ne 0 ]; then
+
+    if ! kubectl cluster-info; then
         echo "Kubernetes cluster is not reachable."
         exit 1
     fi
 
-    echo "Creating kube directory..."
-    mkdir -p ~/.kube  
+    mkdir -p ~/.kube && chmod 700 ~/.kube
+    sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && chmod 600 ~/.kube/config
 
-    if [ -d ~/.kube ]; then
-        echo "Kube directory created successfully."
-        chmod 700 ~/.kube
+    if [ -f ~/.kube/config ]; then
+        echo "Contents of kubeconfig:"
+        cat ~/.kube/config
     else
-        echo "Failed to create kube directory." >&2
+        echo "Failed to locate kubeconfig." >&2
         exit 1
     fi
 
-    echo "Contents of k3s.yaml:"
-    if [ -f /etc/rancher/k3s/k3s.yaml ]; then
-        cat /etc/rancher/k3s/k3s.yaml
-        echo "Contents of k3s.yaml completed" 
-    else
-        echo "Файл /etc/rancher/k3s/k3s.yaml не найден." >&2
-        exit 1
-    fi
-
-    echo "Copying kubeconfig..."
-    if sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config; then
-        echo "Kubeconfig copied successfully."
-    else
-        echo "Failed to copy kubeconfig." >&2
-        exit 1
-    fi
-
-    chmod 600 ~/.kube/config
-    echo "Permissions set for kubeconfig."
-
-    sudo /usr/local/bin/k3s kubectl config view --raw > ~/.kube/config
-    if [ $? -ne 0 ]; then
-        echo "Failed to retrieve kubeconfig."
-        exit 1
-    fi
-    
     sudo chmod 644 /etc/rancher/k3s/k3s.yaml
     sudo systemctl status k3s
-    sudo cat /etc/rancher/k3s/k3s.yaml
 
-    attempt_num=1
-    while ! kubectl cluster-info &> /dev/null && [ $attempt_num -le $max_attempts ]; do
-        echo "Waiting for Kubernetes cluster to be ready..."
-        sleep 10
-        attempt_num=$((attempt_num + 1))
-    done
+    wait_for_condition "kubectl cluster-info &>/dev/null" $max_attempts
 
     curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-    if ! command -v helm &> /dev/null; then
+    if ! command -v helm &>/dev/null; then
         echo "Helm installation failed."
         exit 1
     fi
@@ -109,7 +70,8 @@ if command -v yum &> /dev/null && command -v curl &> /dev/null; then
 
     kubectl create namespace jenkins || echo "Namespace jenkins already exists."
 
-    if ! kubectl get storageclass &> /dev/null; then
+    # Проверка наличия StorageClass и создание по умолчанию
+    if ! kubectl get storageclass &>/dev/null; then
         echo "No StorageClass found. Setting up a default StorageClass..."
         cat <<EOF | kubectl apply -f -
 apiVersion: storage.k8s.io/v1
@@ -133,7 +95,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi  # Укажите размер тома, например, 10Gi
+      storage: 10Gi
   storageClassName: local-path
 EOF
 
@@ -145,35 +107,16 @@ EOF
       --set persistence.existingClaim=jenkins-pvc \
       --set controller.debug=true
 
-
     echo "Waiting for Jenkins to be ready..."
-    attempt_num=1
+    wait_for_condition "kubectl get pod my-jenkins-0 -n jenkins -o jsonpath='{.status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
 
-    while [[ $attempt_num -le $max_attempts ]]; do
-        STATUS=$(kubectl get pod my-jenkins-0 -n jenkins -o jsonpath='{.status.containerStatuses[*].ready}')
-        if [[ "$STATUS" == "true true" ]]; then
-            echo "Both containers in the Jenkins pod are ready."
-            break
-        fi
-        echo "Waiting for both containers in the Jenkins pod to be ready... Attempt $attempt_num of $max_attempts."
-        sleep 10
-        attempt_num=$((attempt_num + 1))
-    done
-
-    if [[ $attempt_num -gt $max_attempts ]]; then
-        echo "Jenkins pod did not become ready in the expected time."
-        exit 1
-    fi
-    
     kubectl get pods -n jenkins
 
     echo "Setting up port forwarding to access Jenkins..."
     kubectl port-forward --namespace jenkins svc/my-jenkins 8080:8080 &
     sleep 5  
 
-
-    JENKINS_POD=$(kubectl get pods -n jenkins -l "app.kubernetes.io/instance=my-jenkins" -o jsonpath="{.items[0].metadata.name}")
-    JENKINS_PASSWORD=$(kubectl exec --namespace jenkins -it svc/my-jenkins -c jenkins -- /bin/cat /run/secrets/additional/chart-admin-password)
+    JENKINS_PASSWORD=$(kubectl exec -n jenkins svc/my-jenkins -c jenkins -- cat /run/secrets/additional/chart-admin-password)
 
     if [ -n "$JENKINS_PASSWORD" ]; then
         echo "Jenkins admin password: $JENKINS_PASSWORD"
@@ -182,17 +125,17 @@ EOF
         exit 1
     fi
 
-
     JENKINS_CLI_JAR=jenkins-cli.jar
+
+    attempt_num=1
 
     if [ ! -f "$JENKINS_CLI_JAR" ]; then
         echo "Jenkins CLI jar not found. Waiting for Jenkins to be ready..."
 
-        attempt_num=1
-        while ! curl -s http://localhost:8080/ &> /dev/null && [ $attempt_num -le $max_attempts ]; do
-            echo "Waiting for Jenkins to be ready..."
+        until curl -s http://localhost:8080/ &> /dev/null || [ $attempt_num -gt $max_attempts ]; do
+            echo "Waiting for Jenkins to be ready... Attempt $attempt_num of $max_attempts."
             sleep 10
-            attempt_num=$((attempt_num + 1))
+            ((attempt_num++))
         done
 
         if [ $attempt_num -gt $max_attempts ]; then
@@ -201,27 +144,19 @@ EOF
         fi
 
         echo "Downloading Jenkins CLI..."
-        curl -L -o "$JENKINS_CLI_JAR" http://localhost:8080/jnlpJars/jenkins-cli.jar
-
-        if [ $? -ne 0 ]; then
+        if ! curl -L -o "$JENKINS_CLI_JAR" http://localhost:8080/jnlpJars/jenkins-cli.jar; then
             echo "Error: Failed to download Jenkins CLI jar."
             exit 1
-        elif [ ! -f "$JENKINS_CLI_JAR" ]; then
-            echo "Error: Jenkins CLI jar file does not exist."
+        fi
+
+        if ! file "$JENKINS_CLI_JAR" | grep -q "Java archive"; then
+            echo "Error: The downloaded file is not a valid jar."
             exit 1
-        else
-            FILE_TYPE=$(file "$JENKINS_CLI_JAR")
-            if ! echo "$FILE_TYPE" | grep -q "Java archive"; then
-                echo "Error: The downloaded file is not a valid jar. Detected type: $FILE_TYPE"
-                exit 1
-            fi
         fi
 
         echo "Jenkins CLI jar downloaded successfully."
-
         echo "Contents of jenkins-cli.jar:"
         hexdump -C "$JENKINS_CLI_JAR" | head -n 20  
-        echo "Output of jenkins-cli.jar completed."
     fi
 
     echo "Creating and running freestyle project..."
