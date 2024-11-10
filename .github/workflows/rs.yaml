@@ -6,7 +6,7 @@ on:
       - main
   push:
     branches:
-      - task_3
+      - task-4
 
 env:
   TF_VAR_token: ${{ vars.TOKEN }}
