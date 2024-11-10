@@ -127,6 +127,15 @@ Host k3s_agent
 
  ## Task 4 
  - Complete command in terminal `terrafor apply`
- - Connect to k3s_server use `ssh -L 8080:localhost:8080 k3s_server`
- - Complete command `kubectl --namespace jenkins port-forward svc/my-jenkins 8080:8080` for connect to jenkins in browser on local machine
- - Open in browser page `http://localhost:8080` and run you project
+ - Connect to k3s_server jenkins use terminal command `ssh k3s_server`
+ - Check logs `sudo cat /var/log/cloud-init-output.log` and find jenkins credentials for example `Jenkins admin password: 8T1DnPrfVqOj4UgIkggJAU`
+ - Connect to k3s_server jenkins use terminal command `ssh -L 8080:localhost:8080 k3s_server`
+ - Open in browser page `http://localhost:8080` and log in Jenkins UI
+
+
+  ## Task 5
+   - Complete command in terminal `terrafor apply`
+   - Connect to k3s_server jenkins use terminal command `ssh k3s_server`
+   - Check logs `sudo cat /var/log/cloud-init-output.log` and find Wordpress credentials for example `WordPress password: v5EaH9drJz`
+   - Connect to k3s_server jenkins use terminal command `ssh -L 8081:localhost:8081 k3s_server`
+   - Open in browser page `http://localhost:8081` and log in Wordpress UI

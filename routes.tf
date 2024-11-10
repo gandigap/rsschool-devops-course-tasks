@@ -1,48 +1,37 @@
-# Task 2: Networking Resources
-
-# Deploy Public Table And Route it to IGW
-resource "aws_route_table" "public" {
+resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.main_vpc.id
+
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
+    gateway_id = aws_nat_gateway.my_project_nat_gateway.id
   }
+
   tags = {
-    Name = "aws-devops-terraform-public-route-table"
+    Name = "Private Route Table"
   }
 }
 
-# Deploy Private Table And Route it to NAT Instance
-resource "aws_route_table" "private" {
+resource "aws_route_table_association" "private_subnet_association" {
+  count          = length(var.private_subnet_cidrs)
+  subnet_id      = element(aws_subnet.private_subnet[*].id, count.index)
+  route_table_id = aws_route_table.private_route_table.id
+}
+
+resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.main_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.my_project_internet_gateway.id
+  }
+
   tags = {
-    Name = "aws-devops-terraform-private-route-table"
+    Name = "Public Route Table"
   }
 }
 
-resource "aws_route" "private_nat_route" {
-  route_table_id         = aws_route_table.private.id
-  destination_cidr_block = "0.0.0.0/0"
-  network_interface_id   = aws_network_interface.nat_interface.id
-}
-
-# Create Assosiations between subnets and route tables
-resource "aws_route_table_association" "public_association_1" {
-  subnet_id      = aws_subnet.public_subnet_1.id
-  route_table_id = aws_route_table.public.id
-}
-
-resource "aws_route_table_association" "public_association_2" {
-  subnet_id      = aws_subnet.public_subnet_2.id
-  route_table_id = aws_route_table.public.id
-}
-
-resource "aws_route_table_association" "private_association_1" {
-  subnet_id      = aws_subnet.private_subnet_1.id
-  route_table_id = aws_route_table.private.id
-}
-
-resource "aws_route_table_association" "private_association_2" {
-  subnet_id      = aws_subnet.private_subnet_2.id
-  route_table_id = aws_route_table.private.id
+resource "aws_route_table_association" "public_subnet_association" {
+  count          = length(var.public_subnet_cidrs)
+  subnet_id      = element(aws_subnet.public_subnet[*].id, count.index)
+  route_table_id = aws_route_table.public_route_table.id
 }
