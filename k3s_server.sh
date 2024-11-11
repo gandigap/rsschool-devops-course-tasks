@@ -192,35 +192,35 @@ EOF
     # Проверяем лог
     # java -jar /jenkins-cli.jar -s http://localhost:8080/ -auth admin:$JENKINS_PASSWORD console hello-world
     
-    # Часть для установки и доступа к WordPress
-    kubectl create namespace wordpress || echo "Namespace wordpress already exists."
+    # # Часть для установки и доступа к WordPress
+    # kubectl create namespace wordpress || echo "Namespace wordpress already exists."
 
-    echo "Installing WordPress using Helm..."
-    helm install my-wordpress bitnami/wordpress \
-        --namespace wordpress \
-        --set service.type=ClusterIP \
-        --set persistence.enabled=true \
-        --set persistence.size=2Gi \
-        --set mariadb.persistence.enabled=true \
-        --set mariadb.persistence.size=2Gi
+    # echo "Installing WordPress using Helm..."
+    # helm install my-wordpress bitnami/wordpress \
+    #     --namespace wordpress \
+    #     --set service.type=ClusterIP \
+    #     --set persistence.enabled=true \
+    #     --set persistence.size=2Gi \
+    #     --set mariadb.persistence.enabled=true \
+    #     --set mariadb.persistence.size=2Gi
 
-    echo "Waiting for WordPress to be ready..."
-    wait_for_condition "kubectl get pod -n wordpress -l app.kubernetes.io/name=wordpress -o jsonpath='{.items[0].status.containerStatuses[0].ready}' | grep -q 'true'" $max_attempts
+    # echo "Waiting for WordPress to be ready..."
+    # wait_for_condition "kubectl get pod -n wordpress -l app.kubernetes.io/name=wordpress -o jsonpath='{.items[0].status.containerStatuses[0].ready}' | grep -q 'true'" $max_attempts
 
-    kubectl get pods -n wordpress
+    # kubectl get pods -n wordpress
 
-    echo "Setting up port forwarding to access WordPress..."
-    kubectl port-forward --namespace wordpress svc/my-wordpress 8081:80 &
-    sleep 5
+    # echo "Setting up port forwarding to access WordPress..."
+    # kubectl port-forward --namespace wordpress svc/my-wordpress 8081:80 &
+    # sleep 5
 
-    WORDPRESS_PASSWORD=$(kubectl get secret --namespace wordpress my-wordpress -o jsonpath="{.data.wordpress-password}" | base64 --decode)
+    # WORDPRESS_PASSWORD=$(kubectl get secret --namespace wordpress my-wordpress -o jsonpath="{.data.wordpress-password}" | base64 --decode)
 
-    if [ -n "$WORDPRESS_PASSWORD" ]; then
-        echo "WordPress password: $WORDPRESS_PASSWORD"
-    else
-        echo "Failed to retrieve WordPress password."
-        exit 1
-    fi
+    # if [ -n "$WORDPRESS_PASSWORD" ]; then
+    #     echo "WordPress password: $WORDPRESS_PASSWORD"
+    # else
+    #     echo "Failed to retrieve WordPress password."
+    #     exit 1
+    # fi
 
 else
     echo "yum or curl is not available, aborting."
