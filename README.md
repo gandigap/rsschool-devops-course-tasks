@@ -1,22 +1,32 @@
 ### Project Structure:
 ``` bash
-├── .github
-│   └── workflows
-│       └── terraform.yml
-├── .gitignore
+├── Dockerfile
+├── README.md
 ├── ec2.tf
-├── eip.tf
-├── eni.tf
-├── igw.tf
+├── ecr.tf
+├── gateway.tf
+├── js-app
+│   ├── index.html
+│   ├── jest.config.js
+│   ├── node_modules
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── script.js
+│   ├── script.test.js
+│   └── util.js
 ├── k3s_server.sh
 ├── keys.tf
 ├── main.tf
-├── nacl.tf
 ├── outputs.tf
-├── README.md
+├── provider.tf
 ├── resources.tf
 ├── routes.tf
 ├── screenshots
+│   ├── task-1
+│   ├── task-3
+│   ├── task-4
+│   ├── task-5
+│   └── task-6
 ├── security-group.tf
 ├── subnets.tf
 ├── variables.tf
@@ -139,3 +149,17 @@ Host k3s_agent
    - Check logs `sudo cat /var/log/cloud-init-output.log` and find Wordpress credentials for example `WordPress password: v5EaH9drJz`
    - Connect to k3s_server jenkins use terminal command `ssh -L 8081:localhost:8081 k3s_server`
    - Open in browser page `http://localhost:8081` and log in Wordpress UI
+
+   ## Task 6
+   - Command for Docker
+   ``` bash
+    aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.eu-north-1.amazonaws.com
+
+    docker build -t js-app .
+
+    docker tag js-app:latest <aws_account_id>.dkr.ecr.eu-north-1.amazonaws.com/js-app-repository:latest
+
+    docker push <aws_account_id>.dkr.ecr.eu-north-1.amazonaws.com/js-app-repository:latest
+
+   ```
+   - Теперь ваш Docker-образ будет храниться в ECR.

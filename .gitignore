@@ -34,3 +34,4 @@ override.tf.json
 
 terraform.rc
 .env
+js-app/node_modules/
