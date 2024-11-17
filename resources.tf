@@ -43,24 +43,31 @@ resource "aws_iam_role_policy_attachment" "attach_policies" {
   policy_arn = each.value
 }
 
+# # Политика доступа для работы с ECR
+# resource "aws_iam_policy" "ecr_access_policy" {
+#   name        = "ECRAccessPolicy"
+#   description = "Policy to allow GitHub Actions to interact with ECR"
+#   policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#       {
+#         Action = [
+#           "ecr:DescribeRepositories",
+#           "ecr:ListImages",
+#           "ecr:BatchGetImage",
+#           "ecr:GetAuthorizationToken",
+#           "ecr:PutImage"
+#         ]
+#         Effect   = "Allow"
+#         Resource = aws_ecr_repository.js_app_repository.arn
+#       }
+#     ]
+#   })
+# }
 
-resource "aws_ecr_repository" "js_app_repository" {
-  name = "js-app-repository"
-}
-
-resource "aws_iam_role" "ecr_role" {
-  name = "ecr_push_pull_role"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      },
-    ]
-  })
-}
+# # Прикрепление политики к роли
+# resource "aws_iam_role_policy_attachment" "attach_ecr_policy" {
+#   policy_arn = aws_iam_policy.ecr_access_policy.arn
+#   role       = aws_iam_role.ecr_role.name
+# }
 
