@@ -104,38 +104,29 @@ EOF
         --namespace jenkins \
         --set persistence.enabled=true \
         --set persistence.existingClaim=jenkins-pvc \
-        --set controller.debug=true
+        --set controller.debug=true \
+        --set service.type=LoadBalancer
 
     echo "Waiting for Jenkins to be ready..."
     wait_for_condition "kubectl get pod my-jenkins-0 -n jenkins -o jsonpath='{.status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
 
     kubectl get pods -n jenkins
-    kubectl port-forward --namespace jenkins svc/my-jenkins 8080:8080 &
-    sleep 5
 
+    # Получаем внешний IP и порт
+    PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+    echo "Public IP: $PUBLIC_IP"
+    kubectl patch svc my-jenkins -n jenkins -p '{"spec": {"type": "LoadBalancer"}}'
+
+    kubectl get svc -n jenkins
+    echo "Jenkins is accessible at http://$PUBLIC_IP:8080"
+    # echo "Waiting for LoadBalancer external IP..."
+    # wait_for_condition "kubectl get svc my-jenkins -n jenkins -o jsonpath='{.status.loadBalancer.ingress[0].ip}'" $max_attempts
+    # EXTERNAL_IP=$(kubectl get svc my-jenkins -n jenkins -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    # echo "Jenkins is accessible at http://$EXTERNAL_IP"
+
+    # Получение пароля администратора
     JENKINS_PASSWORD=$(kubectl exec -n jenkins svc/my-jenkins -c jenkins -- cat /run/secrets/additional/chart-admin-password)
     [ -n "$JENKINS_PASSWORD" ] && echo "Jenkins admin password: $JENKINS_PASSWORD" || { echo "Failed to retrieve Jenkins admin password."; exit 1; }
-
-    # Ожидаем доступность Jenkins CLI
-    JENKINS_CLI_JAR=jenkins-cli.jar
-    if [ ! -f "$JENKINS_CLI_JAR" ]; then
-        echo "Jenkins CLI jar not found. Waiting for Jenkins to be ready..."
-
-        until curl -s http://localhost:8080/ &> /dev/null || [ $attempt_num -gt $max_attempts ]; do
-            echo "Waiting for Jenkins to be ready... Attempt $attempt_num of $max_attempts."
-            sleep 10
-            ((attempt_num++))
-        done
-
-        [ $attempt_num -gt $max_attempts ] && { echo "Jenkins did not become ready in the expected time."; exit 1; }
-
-        echo "Downloading Jenkins CLI..."
-        curl -L -o "$JENKINS_CLI_JAR" http://localhost:8080/jnlpJars/jenkins-cli.jar || { echo "Error: Failed to download Jenkins CLI jar."; exit 1; }
-        file "$JENKINS_CLI_JAR" | grep -q "Java archive" || { echo "Error: The downloaded file is not a valid jar."; exit 1; }
-
-        echo "Jenkins CLI jar downloaded successfully."
-        hexdump -C "$JENKINS_CLI_JAR" | head -n 20
-    fi
 
     echo "Fetching job log..."
 else
