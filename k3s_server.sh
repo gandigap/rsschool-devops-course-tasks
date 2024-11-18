@@ -18,6 +18,20 @@ if command -v yum &>/dev/null && command -v curl &>/dev/null; then
     sudo amazon-linux-extras enable selinux-ng && \
     sudo yum install -y selinux-policy-targeted git java-17-amazon-corretto-devel
 
+    # Добавлено: установка Docker
+    echo "Installing Docker..."
+    sudo amazon-linux-extras enable docker
+    sudo yum install -y docker
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    sudo usermod -aG docker ec2-user
+    if ! docker --version; then
+        echo "Docker installation failed."
+        exit 1
+    fi
+    echo "Docker installed successfully."
+
+    # Установка k3s
     if ! curl -sfL https://get.k3s.io | K3S_TOKEN="${token}" sh -s -; then
         echo "K3s installation failed."
         exit 1
@@ -188,39 +202,6 @@ EOF
     java -jar "$JENKINS_CLI_JAR" -s http://localhost:8080/ -auth admin:$JENKINS_PASSWORD build hello-world
 
     echo "Fetching job log..."
-
-    # Проверяем лог
-    # java -jar /jenkins-cli.jar -s http://localhost:8080/ -auth admin:$JENKINS_PASSWORD console hello-world
-    
-    # # Часть для установки и доступа к WordPress
-    # kubectl create namespace wordpress || echo "Namespace wordpress already exists."
-
-    # echo "Installing WordPress using Helm..."
-    # helm install my-wordpress bitnami/wordpress \
-    #     --namespace wordpress \
-    #     --set service.type=ClusterIP \
-    #     --set persistence.enabled=true \
-    #     --set persistence.size=2Gi \
-    #     --set mariadb.persistence.enabled=true \
-    #     --set mariadb.persistence.size=2Gi
-
-    # echo "Waiting for WordPress to be ready..."
-    # wait_for_condition "kubectl get pod -n wordpress -l app.kubernetes.io/name=wordpress -o jsonpath='{.items[0].status.containerStatuses[0].ready}' | grep -q 'true'" $max_attempts
-
-    # kubectl get pods -n wordpress
-
-    # echo "Setting up port forwarding to access WordPress..."
-    # kubectl port-forward --namespace wordpress svc/my-wordpress 8081:80 &
-    # sleep 5
-
-    # WORDPRESS_PASSWORD=$(kubectl get secret --namespace wordpress my-wordpress -o jsonpath="{.data.wordpress-password}" | base64 --decode)
-
-    # if [ -n "$WORDPRESS_PASSWORD" ]; then
-    #     echo "WordPress password: $WORDPRESS_PASSWORD"
-    # else
-    #     echo "Failed to retrieve WordPress password."
-    #     exit 1
-    # fi
 
 else
     echo "yum or curl is not available, aborting."
