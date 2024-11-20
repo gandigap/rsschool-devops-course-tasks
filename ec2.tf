@@ -5,6 +5,7 @@ resource "aws_instance" "k3s_instance" {
   subnet_id                   = aws_subnet.public_subnet[0].id
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.k3s.id]
+  iam_instance_profile        = aws_iam_instance_profile.ec2_instance_profile.name
 
   tags = {
     Name = "K3s instance"

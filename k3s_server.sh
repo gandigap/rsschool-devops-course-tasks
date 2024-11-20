@@ -100,12 +100,15 @@ EOF
 
     helm repo add jenkins https://charts.jenkins.io
     helm repo update
+    helm search repo jenkins
+    echo "Start jenkins install"
     helm install my-jenkins jenkins/jenkins \
         --namespace jenkins \
         --set persistence.enabled=true \
         --set persistence.existingClaim=jenkins-pvc \
         --set controller.debug=true \
-        --set service.type=LoadBalancer
+        --set service.type=LoadBalancer \
+        --set controller.containerSecurityContext.readOnlyRootFilesystem=false
 
     echo "Waiting for Jenkins to be ready..."
     wait_for_condition "kubectl get pod my-jenkins-0 -n jenkins -o jsonpath='{.status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
@@ -119,10 +122,6 @@ EOF
 
     kubectl get svc -n jenkins
     echo "Jenkins is accessible at http://$PUBLIC_IP:8080"
-    # echo "Waiting for LoadBalancer external IP..."
-    # wait_for_condition "kubectl get svc my-jenkins -n jenkins -o jsonpath='{.status.loadBalancer.ingress[0].ip}'" $max_attempts
-    # EXTERNAL_IP=$(kubectl get svc my-jenkins -n jenkins -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-    # echo "Jenkins is accessible at http://$EXTERNAL_IP"
 
     # Получение пароля администратора
     JENKINS_PASSWORD=$(kubectl exec -n jenkins svc/my-jenkins -c jenkins -- cat /run/secrets/additional/chart-admin-password)
