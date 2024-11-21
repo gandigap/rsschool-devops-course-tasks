@@ -31,7 +31,13 @@ pipeline {
     }
   }
   triggers {
-    githubPush()  // Это позволяет запускать пайплайн по событию push на GitHub
+    GenericTrigger(
+      causeString: 'Triggered by GitHub Push',
+      token: 'my-github-token', 
+      printPostContent: true,   
+      printContributedVariables: true, 
+      silentResponse: false
+    )
   }
   stages {
     stage('Prepare') {
@@ -40,9 +46,8 @@ pipeline {
           script {
             echo "Cloning repository..."
             sh '''
-              git clone https://github.com/gandigap/rsschool-devops-course-tasks.git repo
+              git clone https://github.com/gandigap/js-app.git repo
               cd repo
-              git checkout task-6
               echo "Contents of the repository:"
               ls -la
             '''
@@ -57,7 +62,7 @@ pipeline {
           script {
             echo "Installing dependencies..."
             sh '''
-              cd repo/js-app
+              cd repo
               npm install
             '''
           }
@@ -71,7 +76,7 @@ pipeline {
           script {
             echo "Running tests..."
             sh '''
-              cd repo/js-app
+              cd repo
               npm test
             '''
           }
@@ -100,7 +105,7 @@ pipeline {
           script {
             echo "Building Docker image..."
             sh '''
-              cd repo/js-app
+              cd repo
               pwd
               ls -la
               docker build -t js-app:latest -f Dockerfile .
@@ -116,9 +121,6 @@ pipeline {
           script {
             echo "Publishing Docker image to ECR..."
             sh '''
-              // # Создание репозитория, если его еще нет
-              // aws ecr describe-repositories --repository-names js-app || aws ecr create-repository --repository-name js-app --region eu-north-1
-              
               # Логинимся в ECR
               aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 195690311722.dkr.ecr.eu-north-1.amazonaws.com
               
