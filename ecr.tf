@@ -2,22 +2,6 @@ resource "aws_ecr_repository" "js_app_repository" {
   name = "js-app-repository"
 }
 
-resource "aws_iam_role" "ecr_role" {
-  name = "ecr_push_pull_role"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      },
-    ]
-  })
-}
-
 
 resource "aws_iam_role" "ec2_ecr_role" {
   name = "ec2-ecr-role"
@@ -45,13 +29,24 @@ resource "aws_iam_policy" "ecr_policy" {
     Statement = [
       {
         Action = [
-          "ecr:GetAuthorizationToken",
+          "ecr:GetAuthorizationToken"
+        ]
+        Resource = "*"
+        Effect   = "Allow"
+      },
+      {
+        Action = [
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetRepositoryPolicy",
           "ecr:ListImages",
-          "ecr:DescribeImages"
+          "ecr:DescribeImages",
+          "ecr:PutImage",
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:BatchGetImage"
         ]
-        Resource = "arn:aws:ecr:eu-north-1:my-id:repository/js-app-repository"
+        Resource = "arn:aws:ecr:eu-north-1:195690311722:repository/js-app-repository"
         Effect   = "Allow"
       }
     ]
