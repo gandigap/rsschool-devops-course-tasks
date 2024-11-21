@@ -14,7 +14,19 @@ pipeline {
             command:
             - cat
             tty: true
-        '''
+          - name: docker
+            image: docker:24.0.5
+            command:
+            - cat
+            tty: true
+            volumeMounts:
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
+          volumes:
+          - name: docker-socket
+            hostPath:
+              path: /var/run/docker.sock
+      '''
       retries 2
     }
   }
@@ -58,6 +70,34 @@ pipeline {
             sh '''
               cd repo/js-app
               npm test
+            '''
+          }
+        }
+      }
+    }
+
+    stage('Install AWS CLI') {
+      steps {
+        container('docker') {
+          script {
+            echo "Installing AWS CLI..."
+            sh '''
+              apk add --no-cache python3 py3-pip
+              pip3 install awscli
+              aws --version
+            '''
+          }
+        }
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        container('docker') {
+          script {
+            echo "Building Docker image..."
+            sh '''
+              docker build -t js-app:latest -f Dockerfile .
             '''
           }
         }
