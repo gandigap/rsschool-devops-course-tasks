@@ -97,7 +97,25 @@ pipeline {
           script {
             echo "Building Docker image..."
             sh '''
+              cd repo/js-app
+              pwd
+              ls -la
               docker build -t js-app:latest -f Dockerfile .
+            '''
+          }
+        }
+      }
+    }
+
+    stage('Publish to ECR') {
+      steps {
+        container('docker') {
+          script {
+            echo "Publishing Docker image to ECR..."
+            sh '''
+              aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 195690311722.dkr.ecr.eu-north-1.amazonaws.com
+              docker tag js-app:latest 195690311722.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
+              docker push 195690311722.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
             '''
           }
         }
