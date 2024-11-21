@@ -30,6 +30,9 @@ pipeline {
       retries 2
     }
   }
+  triggers {
+    githubPush()  // Это позволяет запускать пайплайн по событию push на GitHub
+  }
   stages {
     stage('Prepare') {
       steps {
@@ -113,7 +116,13 @@ pipeline {
           script {
             echo "Publishing Docker image to ECR..."
             sh '''
+              // # Создание репозитория, если его еще нет
+              // aws ecr describe-repositories --repository-names js-app || aws ecr create-repository --repository-name js-app --region eu-north-1
+              
+              # Логинимся в ECR
               aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 195690311722.dkr.ecr.eu-north-1.amazonaws.com
+              
+              # Тегируем и пушим образ
               docker tag js-app:latest 195690311722.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
               docker push 195690311722.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
             '''

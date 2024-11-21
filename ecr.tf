@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "js_app_repository" {
-  name = "js-app-repository"
+  name = "js-app"
 }
 
 
@@ -44,9 +44,10 @@ resource "aws_iam_policy" "ecr_policy" {
           "ecr:InitiateLayerUpload",
           "ecr:UploadLayerPart",
           "ecr:CompleteLayerUpload",
-          "ecr:BatchGetImage"
+          "ecr:BatchGetImage",
+          "ecr:CreateRepository" # Добавлено разрешение для создания репозитория
         ]
-        Resource = "arn:aws:ecr:eu-north-1:195690311722:repository/js-app-repository"
+        Resource = "*"
         Effect   = "Allow"
       }
     ]
