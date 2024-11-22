@@ -107,7 +107,6 @@ pipeline {
             sh '''
               cd repo
               pwd
-              ls -la
               docker build -t js-app:latest -f Dockerfile .
             '''
           }
@@ -121,10 +120,7 @@ pipeline {
           script {
             echo "Publishing Docker image to ECR..."
             sh '''
-              # Логинимся в ECR
               aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 195690311722.dkr.ecr.eu-north-1.amazonaws.com
-              
-              # Тегируем и пушим образ
               docker tag js-app:latest 195690311722.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
               docker push 195690311722.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
             '''
@@ -132,5 +128,40 @@ pipeline {
         }
       }
     }
+    stage('Deploy to Kubernetes') {
+      steps {
+          container('docker') {
+              script {
+                  echo "Deploying Docker image to Kubernetes..."
+                  sh '''
+                      kubectl set image deployment/js-app js-app=195690311722.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
+                  '''
+              }
+          }
+        }
+      }
+  }
+  post {
+    success {
+      script {
+        echo "Pipeline completed successfully!"
+        emailext(
+          subject: 'Jenkins Pipeline Success',
+          body: "Pipeline '${env.JOB_NAME}' (#${env.BUILD_NUMBER}) завершился успешно.\n\nПосмотреть результат: ${env.BUILD_URL}",
+          to: 'igor.simatic@gmail.com' 
+        )
+      }
+    }
+    failure {
+      script {
+        echo "Pipeline failed!"
+        emailext(
+          subject: 'Jenkins Pipeline Failure',
+          body: "Pipeline '${env.JOB_NAME}' (#${env.BUILD_NUMBER}) завершился с ошибкой.\n\nПосмотреть результат: ${env.BUILD_URL}",
+          to: 'igor.simatic@gmail.com' 
+        )
+      }
+    }
   }
 }
+

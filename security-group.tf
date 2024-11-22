@@ -177,9 +177,9 @@ resource "aws_security_group" "k3s" {
   }
 
   ingress {
-    description = "Public"
-    from_port   = 32000
-    to_port     = 32000
+    description = "SMTP"
+    from_port   = 465
+    to_port     = 465
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
