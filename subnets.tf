@@ -1,43 +1,29 @@
 # Task 2: Networking Resources
 
-# Deploy Public Subnets
-resource "aws_subnet" "public_subnet_1" {
-  tags = {
-    Name = "aws-devops-terraform-public-subnet-1"
-  }
-  cidr_block              = var.public_subnet_1_cidr
+# Deploy  Subnets
+resource "aws_subnet" "public_subnet" {
+  count                   = length(var.public_subnet_cidrs)
   vpc_id                  = aws_vpc.main_vpc.id
-  availability_zone       = var.availability_zones[0]
+  cidr_block              = element(var.public_subnet_cidrs, count.index)
+  availability_zone       = element(var.availability_zones, count.index)
   map_public_ip_on_launch = true
+
+  tags = {
+    Name        = "Public Subnet ${count.index + 1}"
+    Environment = "Development"
+  }
 }
 
-resource "aws_subnet" "public_subnet_2" {
-  tags = {
-    Name = "aws-devops-terraform-public-subnet-2"
-  }
-  cidr_block              = var.public_subnet_2_cidr
-  vpc_id                  = aws_vpc.main_vpc.id
-  availability_zone       = var.availability_zones[1]
-  map_public_ip_on_launch = true
-}
-
-# Deploy Private Subnets
-resource "aws_subnet" "private_subnet_1" {
-  tags = {
-    Name = "aws-devops-terraform-private-subnet-1"
-  }
-  cidr_block        = var.private_subnet_1_cidr
+resource "aws_subnet" "private_subnet" {
+  count             = length(var.private_subnet_cidrs)
   vpc_id            = aws_vpc.main_vpc.id
-  availability_zone = var.availability_zones[0]
+  cidr_block        = element(var.private_subnet_cidrs, count.index)
+  availability_zone = element(var.availability_zones, count.index)
 
-}
-
-resource "aws_subnet" "private_subnet_2" {
   tags = {
-    Name = "aws-devops-terraform-private-subnet-2"
+    Name        = "Private Subnet ${count.index + 1}"
+    Environment = "Development"
   }
-  cidr_block        = var.private_subnet_2_cidr
-  vpc_id            = aws_vpc.main_vpc.id
-  availability_zone = var.availability_zones[1]
 }
+
 

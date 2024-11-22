@@ -1,43 +1,19 @@
-# Task 1: AWS Account Setup Outputs
-
-output "aws_region" {
-  value       = var.region
-  description = "The AWS region"
+output "vpc_id" {
+  value = aws_vpc.main_vpc.id
 }
 
-output "GHA_role_name" {
-  description = "GHA Role Name"
-  value       = aws_iam_role.terraform_gha_role.name
-  sensitive   = false
+output "public_subnet_ids" {
+  value = aws_subnet.public_subnet[*].id
 }
 
-output "GHA_role_arn" {
-  description = "GHA Role ARN"
-  value       = aws_iam_role.terraform_gha_role.arn
-  sensitive   = true
+output "private_subnet_ids" {
+  value = aws_subnet.private_subnet[*].id
 }
 
-# Task 2: Networking Resources Outputs
-
-output "network_interface_id" {
-  value = aws_network_interface.nat_interface.id
+output "k3s_instance_public_ip" {
+  value = aws_instance.k3s_instance.public_ip
 }
 
-
-output "eip" {
-  value = aws_eip.public_ip.public_ip
-}
-
-# Task 3: k3s Setup
-
-output "nat_security_group_arn" {
-  value = aws_security_group.nat_sg.arn
-}
-
-output "k3s_server_public_ip_address" {
-  value = aws_instance.k3s_server.public_ip
-}
-
-output "k3s_server_private_ip_address" {
-  value = aws_instance.k3s_server.private_ip
+output "k3s_instance_private_ip" {
+  value = aws_instance.k3s_instance.private_ip
 }
