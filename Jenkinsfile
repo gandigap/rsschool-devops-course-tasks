@@ -120,9 +120,9 @@ pipeline {
           script {
             echo "Publishing Docker image to ECR..."
             sh '''
-              aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 195690311722.dkr.ecr.eu-north-1.amazonaws.com
-              docker tag js-app:latest 195690311722.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
-              docker push 195690311722.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
+              aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin <aws-user-id>.dkr.ecr.eu-north-1.amazonaws.com
+              docker tag js-app:latest <aws-user-id>.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
+              docker push <aws-user-id>.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
             '''
           }
         }

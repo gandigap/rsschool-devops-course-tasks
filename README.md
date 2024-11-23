@@ -152,11 +152,15 @@ Host k3s_agent
 
    ## Task 6
    - Complete command `terraform apply` and connect to instance after change .ssh/config `ssh k3s_server`
-   [![N|](https://github.com/gandigap/js-app/blob/main/screeenshots/webhook%20for%20start%20jenkins%20pipeline.png)](https://github.com/gandigap/js-app/blob/main/screeenshots/webhook%20for%20start%20jenkins%20pipeline.png)
    - Check logs complete command `sudo cat /var/log/cloud-init-output.log` and find credentials and Jenkins url
-
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/terraform-config-connect-jenkins-cred.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/terraform-config-connect-jenkins-cred.png)
    - Connect to Jenkins and add required plugins for notifications and webhook trigger and credentionals
-
+  Config for webhook trigger you can check in README js-app repository https://github.com/gandigap/js-app
+  Notification instructions
+  1. Add plugin
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-plugin.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-plugin.png)
+   2. Add mail-cred
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-jenkins-cred.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-plugin.png)
    - Create pipeline and manual run or wait webhook trigger
    - After success you can manual run js-app with docker
    
