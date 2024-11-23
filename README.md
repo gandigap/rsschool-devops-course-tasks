@@ -154,14 +154,37 @@ Host k3s_agent
    - Complete command `terraform apply` and connect to instance after change .ssh/config `ssh k3s_server`
    - Check logs complete command `sudo cat /var/log/cloud-init-output.log` and find credentials and Jenkins url
  [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/terraform-config-connect-jenkins-cred.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/terraform-config-connect-jenkins-cred.png)
-   - Connect to Jenkins and add required plugins for notifications and webhook trigger and credentionals
-  Config for webhook trigger you can check in README js-app repository https://github.com/gandigap/js-app
-  Notification instructions
-  1. Add plugin
+   - Connect to Jenkins and add required plugins for notifications and webhook trigger and credentionals. Config for webhook trigger you can check in README js-app repository https://github.com/gandigap/js-app
+  - Notification instructions
+1. Add plugin
  [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-plugin.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-plugin.png)
-   2. Add mail-cred
+ 2. Create google password
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-google-password.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-google-password.png)
+ 3. Add mail-cred
  [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-jenkins-cred.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-plugin.png)
-   - Create pipeline and manual run or wait webhook trigger
+ 4. Add notification system configs
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-test-config-success.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-test-config-success.png)
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-test-config.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-test-config.png)
+
+   - Create pipeline (file in root) and manual run or wait webhook trigger
+1. Clone
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-clone.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-clone.png)
+2. Install dependencies
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-install-dependencies.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-install-dependencies.png)
+3. Unit test
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-unit-tests.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-unit-tests.png)
+4. Install aws cli
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-install-aws-cli.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-install-aws-cli.png)
+ 5. Docker build
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-docker-build.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-docker-build.png)
+  6. Docker push to ECR
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-push-ecr.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-push-ecr.png)
+ 7. Pipe success and notification
+  [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-success-send.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-success-send.png)
+  [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-1.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-1.png)
+    [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-2.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-2.png)
+
+
    - After success you can manual run js-app with docker
-   
+     [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual deploy.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual deploy.png)
    
