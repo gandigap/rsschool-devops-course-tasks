@@ -128,18 +128,6 @@ pipeline {
         }
       }
     }
-    stage('Deploy to Kubernetes') {
-      steps {
-          container('docker') {
-              script {
-                  echo "Deploying Docker image to Kubernetes..."
-                  sh '''
-                      kubectl set image deployment/js-app js-app=195690311722.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
-                  '''
-              }
-          }
-        }
-      }
   }
   post {
     success {
