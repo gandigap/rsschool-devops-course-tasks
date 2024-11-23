@@ -151,15 +151,13 @@ Host k3s_agent
    - Open in browser page `http://localhost:8081` and log in Wordpress UI
 
    ## Task 6
-   - Command for Docker
-   ``` bash
-    aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.eu-north-1.amazonaws.com
+   - Complete command `terraform apply` and connect to instance after change .ssh/config `ssh k3s_server`
+   [![N|](https://github.com/gandigap/js-app/blob/main/screeenshots/webhook%20for%20start%20jenkins%20pipeline.png)](https://github.com/gandigap/js-app/blob/main/screeenshots/webhook%20for%20start%20jenkins%20pipeline.png)
+   - Check logs complete command `sudo cat /var/log/cloud-init-output.log` and find credentials and Jenkins url
 
-    docker build -t js-app .
+   - Connect to Jenkins and add required plugins for notifications and webhook trigger and credentionals
 
-    docker tag js-app:latest <aws_account_id>.dkr.ecr.eu-north-1.amazonaws.com/js-app-repository:latest
-
-    docker push <aws_account_id>.dkr.ecr.eu-north-1.amazonaws.com/js-app-repository:latest
-
-   ```
-   - Теперь ваш Docker-образ будет храниться в ECR.
+   - Create pipeline and manual run or wait webhook trigger
+   - After success you can manual run js-app with docker
+   
+   

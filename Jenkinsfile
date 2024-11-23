@@ -129,27 +129,28 @@ pipeline {
       }
     }
   }
-  post {
-    success {
-      script {
-        echo "Pipeline completed successfully!"
-        emailext(
-          subject: 'Jenkins Pipeline Success',
-          body: "Pipeline '${env.JOB_NAME}' (#${env.BUILD_NUMBER}) завершился успешно.\n\nПосмотреть результат: ${env.BUILD_URL}",
-          to: 'igor.simatic@gmail.com' 
-        )
-      }
-    }
-    failure {
-      script {
-        echo "Pipeline failed!"
-        emailext(
-          subject: 'Jenkins Pipeline Failure',
-          body: "Pipeline '${env.JOB_NAME}' (#${env.BUILD_NUMBER}) завершился с ошибкой.\n\nПосмотреть результат: ${env.BUILD_URL}",
-          to: 'igor.simatic@gmail.com' 
-        )
-      }
-    }
-  }
+  // Commend because i did it before and add screen
+  // post {
+  //   success {
+  //     script {
+  //       echo "Pipeline completed successfully!"
+  //       emailext(
+  //         subject: 'Jenkins Pipeline Success',
+  //         body: "Pipeline '${env.JOB_NAME}' (#${env.BUILD_NUMBER}) завершился успешно.\n\nПосмотреть результат: ${env.BUILD_URL}",
+  //         to: 'igor.simatic@gmail.com' 
+  //       )
+  //     }
+  //   }
+  //   failure {
+  //     script {
+  //       echo "Pipeline failed!"
+  //       emailext(
+  //         subject: 'Jenkins Pipeline Failure',
+  //         body: "Pipeline '${env.JOB_NAME}' (#${env.BUILD_NUMBER}) завершился с ошибкой.\n\nПосмотреть результат: ${env.BUILD_URL}",
+  //         to: 'igor.simatic@gmail.com' 
+  //       )
+  //     }
+  //   }
+  // }
 }
 

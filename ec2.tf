@@ -13,5 +13,3 @@ resource "aws_instance" "k3s_instance" {
 
   user_data = file("k3s_server.sh")
 }
-
-
