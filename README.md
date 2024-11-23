@@ -186,5 +186,5 @@ Host k3s_agent
 
 
    - After success you can manual run js-app with docker
-     [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual deploy.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual deploy.png)
+     [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual-deploy.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual-deploy.png)
    
