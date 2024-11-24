@@ -175,16 +175,23 @@ Host k3s_agent
  [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-unit-tests.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-unit-tests.png)
 4. Install aws cli
  [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-install-aws-cli.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-install-aws-cli.png)
- 5. Docker build
+5. Docker build
  [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-docker-build.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-docker-build.png)
-  6. Docker push to ECR
+6. Docker push to ECR
  [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-push-ecr.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-push-ecr.png)
- 7. Pipe success and notification
+7. Pipe success and notification
   [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-success-send.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-success-send.png)
   [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-1.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-1.png)
-    [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-2.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-2.png)
+  [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-2.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-2.png)
 
 
-   - After success you can manual run js-app with docker
-     [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual-deploy.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual-deploy.png)
-   
+- After success you can manual run js-app with docker
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual-deploy.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual-deploy.png)
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/success-deploy.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/success-deploy.png)
+     or with kubectl and [app-deployment.yaml](https://github.com/gandigap/js-app/blob/main/app-deployment.yaml) from js-app 
+1. create ecr secret
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-2.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-2.png)
+2. Create `app-deployment.yaml` with template from js-app repository
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-1.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-1.png)
+3. Start js-app pods
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-3.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-3.png)

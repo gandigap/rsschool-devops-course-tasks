@@ -45,7 +45,8 @@ resource "aws_iam_policy" "ecr_policy" {
           "ecr:UploadLayerPart",
           "ecr:CompleteLayerUpload",
           "ecr:BatchGetImage",
-          "ecr:CreateRepository" # Добавлено разрешение для создания репозитория
+          "ecr:CreateRepository",
+          "ecr:GetDownloadUrlForLayer"
         ]
         Resource = "*"
         Effect   = "Allow"

@@ -30,15 +30,16 @@ pipeline {
       retries 2
     }
   }
-  triggers {
-    GenericTrigger(
-      causeString: 'Triggered by GitHub Push',
-      token: 'my-github-token', 
-      printPostContent: true,   
-      printContributedVariables: true, 
-      silentResponse: false
-    )
-  }
+  // commend because did it early
+  // triggers {
+  //   GenericTrigger(
+  //     causeString: 'Triggered by GitHub Push',
+  //     token: 'my-github-token', 
+  //     printPostContent: true,   
+  //     printContributedVariables: true, 
+  //     silentResponse: false
+  //   )
+  // }
   stages {
     stage('Prepare') {
       steps {
@@ -120,9 +121,9 @@ pipeline {
           script {
             echo "Publishing Docker image to ECR..."
             sh '''
-              aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin <aws-user-id>.dkr.ecr.eu-north-1.amazonaws.com
-              docker tag js-app:latest <aws-user-id>.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
-              docker push <aws-user-id>.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
+              aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin <aws_user_id>.dkr.ecr.eu-north-1.amazonaws.com
+              docker tag js-app:latest <aws_user_id>.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
+              docker push <aws_user_id>.dkr.ecr.eu-north-1.amazonaws.com/js-app:latest
             '''
           }
         }
