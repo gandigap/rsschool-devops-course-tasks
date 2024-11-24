@@ -187,11 +187,19 @@ Host k3s_agent
 
 - After success you can manual run js-app with docker
 [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual-deploy.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual-deploy.png)
-[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/success-deploy.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/success-deploy.png)
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/success-deploy-with-docker.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/success-deploy-with-docker.png)
      or with kubectl and [app-deployment.yaml](https://github.com/gandigap/js-app/blob/main/app-deployment.yaml) from js-app 
 1. create ecr secret
+
 [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-2.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-2.png)
+
 2. Create `app-deployment.yaml` with template from js-app repository
 [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-1.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-1.png)
+
 3. Start js-app pods
+
 [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-3.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-3.png)
+
+4. Success deploy
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-4.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-4.png)
