@@ -123,21 +123,19 @@ EOF
     kubectl get svc -n jenkins
     echo "Jenkins is accessible at http://$PUBLIC_IP:8080"
 
-    # Получение пароля администратора
+
     JENKINS_PASSWORD=$(kubectl exec -n jenkins svc/my-jenkins -c jenkins -- cat /run/secrets/additional/chart-admin-password)
     [ -n "$JENKINS_PASSWORD" ] && echo "Jenkins admin password: $JENKINS_PASSWORD" || { echo "Failed to retrieve Jenkins admin password."; exit 1; }
 
     echo "Fetching job log..."
 
-    # Установка Prometheus
+   
     echo "Installing Prometheus using Bitnami Helm chart..."
     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
     helm repo update
 
-    # Создаем namespace для Prometheus
     kubectl create namespace monitoring || echo "Namespace monitoring already exists."
 
-    # Установка Prometheus с ограничением внешнего доступа
     helm install prometheus prometheus-community/prometheus \
         --namespace monitoring \
         --set server.service.type=ClusterIP \
@@ -149,10 +147,8 @@ EOF
 
     kubectl get pods -n monitoring
 
-    # Настройка port-forward для доступа к интерфейсу Prometheus
     PROMETHEUS_POD=$(kubectl get pods -n monitoring -l app.kubernetes.io/component=server -o jsonpath='{.items[0].metadata.name}')
     echo "To access Prometheus web interface, run:"
-    echo "kubectl port-forward -n monitoring $PROMETHEUS_POD 9090:9090"
 
 else
     echo "yum or curl is not available, aborting."
