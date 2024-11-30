@@ -94,7 +94,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 2Gi
   storageClassName: local-path
 EOF
 
@@ -129,7 +129,6 @@ EOF
 
     echo "Fetching job log..."
 
-   
     echo "Installing Prometheus using Bitnami Helm chart..."
     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
     helm repo update
@@ -147,9 +146,47 @@ EOF
 
     kubectl get pods -n monitoring
 
-    PROMETHEUS_POD=$(kubectl get pods -n monitoring -l app.kubernetes.io/component=server -o jsonpath='{.items[0].metadata.name}')
-    echo "To access Prometheus web interface, run:"
+    echo "Installing Grafana using Bitnami Helm chart..."
+    kubectl create namespace grafana || echo "Namespace grafana already exists."
 
+    helm repo add grafana https://grafana.github.io/helm-charts
+    helm repo update
+
+    helm install grafana grafana/grafana \
+        --namespace grafana \
+        --set persistence.enabled=true \
+        --set persistence.size=2Gi \
+        --set adminPassword='GrafanaAdminPassword' \
+        --set service.type=LoadBalancer \
+        --set service.port=3000
+
+    echo "Waiting for Grafana to be ready..."
+    wait_for_condition "kubectl get pods -n grafana -o jsonpath='{.items[*].status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
+
+    kubectl get pods -n grafana
+
+    # Настройка источника данных для Grafana
+    echo "Configuring Grafana datasource..."
+#     cat <<EOF | kubectl apply -f -
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: grafana-datasource
+#   namespace: grafana
+#   labels:
+#     grafana_datasource: "1"
+# data:
+#   prometheus.yaml: |-
+#     apiVersion: 1
+#     datasources:
+#       - name: Prometheus
+#         type: prometheus
+#         access: proxy
+#         url: http://prometheus-server.monitoring.svc.cluster.local
+#         isDefault: true
+# EOF
+
+    echo "Grafana setup is complete. Access it at http://$PUBLIC_IP:3000"
 else
     echo "yum or curl is not available, aborting."
     exit 1
