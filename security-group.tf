@@ -177,9 +177,25 @@ resource "aws_security_group" "k3s" {
   }
 
   ingress {
-    description = "Public"
-    from_port   = 32000
-    to_port     = 32000
+    description = "SMTP"
+    from_port   = 465
+    to_port     = 465
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "docker-deploy-app"
+    from_port   = 3001
+    to_port     = 3001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "kubectl-deploy-app"
+    from_port   = 30001
+    to_port     = 30001
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }

@@ -23,7 +23,8 @@ variable "iam_policies" {
     "arn:aws:iam::aws:policy/AmazonVPCFullAccess",
     "arn:aws:iam::aws:policy/AmazonSQSFullAccess",
     "arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess",
-    "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess" # For future dynamodb setup of S3 backend
+    "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
   ]
 }
 
@@ -81,5 +82,5 @@ variable "token" {
 
 variable "ec2_instance_type" {
   description = "EC2 instance type"
-  default     = "t3.small"
+  default     = "t3.medium"
 }

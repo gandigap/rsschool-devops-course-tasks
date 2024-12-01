@@ -1,22 +1,32 @@
 ### Project Structure:
 ``` bash
-├── .github
-│   └── workflows
-│       └── terraform.yml
-├── .gitignore
+├── Dockerfile
+├── README.md
 ├── ec2.tf
-├── eip.tf
-├── eni.tf
-├── igw.tf
+├── ecr.tf
+├── gateway.tf
+├── js-app
+│   ├── index.html
+│   ├── jest.config.js
+│   ├── node_modules
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── script.js
+│   ├── script.test.js
+│   └── util.js
 ├── k3s_server.sh
 ├── keys.tf
 ├── main.tf
-├── nacl.tf
 ├── outputs.tf
-├── README.md
+├── provider.tf
 ├── resources.tf
 ├── routes.tf
 ├── screenshots
+│   ├── task-1
+│   ├── task-3
+│   ├── task-4
+│   ├── task-5
+│   └── task-6
 ├── security-group.tf
 ├── subnets.tf
 ├── variables.tf
@@ -139,3 +149,57 @@ Host k3s_agent
    - Check logs `sudo cat /var/log/cloud-init-output.log` and find Wordpress credentials for example `WordPress password: v5EaH9drJz`
    - Connect to k3s_server jenkins use terminal command `ssh -L 8081:localhost:8081 k3s_server`
    - Open in browser page `http://localhost:8081` and log in Wordpress UI
+
+   ## Task 6
+   - Complete command `terraform apply` and connect to instance after change .ssh/config `ssh k3s_server`
+   - Check logs complete command `sudo cat /var/log/cloud-init-output.log` and find credentials and Jenkins url
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/terraform-config-connect-jenkins-cred.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/terraform-config-connect-jenkins-cred.png)
+   - Connect to Jenkins and add required plugins for notifications and webhook trigger and credentionals. Config for webhook trigger you can check in README js-app repository https://github.com/gandigap/js-app
+  - Notification instructions
+1. Add plugin
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-plugin.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-plugin.png)
+ 2. Create google password
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-google-password.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-google-password.png)
+ 3. Add mail-cred
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-jenkins-cred.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-plugin.png)
+ 4. Add notification system configs
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-test-config-success.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-test-config-success.png)
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-test-config.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-test-config.png)
+
+   - Create pipeline (file in root) and manual run or wait webhook trigger
+1. Clone
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-clone.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-clone.png)
+2. Install dependencies
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-install-dependencies.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-install-dependencies.png)
+3. Unit test
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-unit-tests.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-unit-tests.png)
+4. Install aws cli
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-install-aws-cli.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-install-aws-cli.png)
+5. Docker build
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-docker-build.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-docker-build.png)
+6. Docker push to ECR
+ [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-push-ecr.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipe-step-push-ecr.png)
+7. Pipe success and notification
+  [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-success-send.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/notification-success-send.png)
+  [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-1.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-1.png)
+  [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-2.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/pipeline-success-2.png)
+
+
+- After success you can manual run js-app with docker
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual-deploy.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/manual-deploy.png)
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/success-deploy-with-docker.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/success-deploy-with-docker.png)
+     or with kubectl and [app-deployment.yaml](https://github.com/gandigap/js-app/blob/main/app-deployment.yaml) from js-app 
+1. create ecr secret
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-2.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-2.png)
+
+2. Create `app-deployment.yaml` with template from js-app repository
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-1.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-1.png)
+
+3. Start js-app pods
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-3.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-3.png)
+
+4. Success deploy
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-4.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-4.png)

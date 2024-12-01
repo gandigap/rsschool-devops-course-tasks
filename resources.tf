@@ -42,3 +42,4 @@ resource "aws_iam_role_policy_attachment" "attach_policies" {
   role       = aws_iam_role.terraform_gha_role.name
   policy_arn = each.value
 }
+
