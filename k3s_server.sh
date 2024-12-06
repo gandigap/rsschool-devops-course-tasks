@@ -146,47 +146,28 @@ EOF
 
     kubectl get pods -n monitoring
 
-    echo "Installing Grafana using Bitnami Helm chart..."
-    kubectl create namespace grafana || echo "Namespace grafana already exists."
+    # echo "Waiting Grafana using Bitnami Helm chart..."
+    # kubectl create namespace grafana || echo "Namespace grafana already exists."
 
-    helm repo add grafana https://grafana.github.io/helm-charts
-    helm repo update
+    # helm repo add grafana https://grafana.github.io/helm-charts
+    # helm repo update
 
-    helm install grafana grafana/grafana \
-        --namespace grafana \
-        --set persistence.enabled=true \
-        --set persistence.size=2Gi \
-        --set adminPassword='GrafanaAdminPassword' \
-        --set service.type=LoadBalancer \
-        --set service.port=3000
+    # helm install grafana grafana/grafana \
+    #     --namespace grafana \
+    #     --set persistence.enabled=true \
+    #     --set persistence.size=2Gi \
+    #     --set adminPassword='GrafanaAdminPassword' \
+    #     --set service.type=LoadBalancer \
+    #     --set service.port=3000
 
-    echo "Waiting for Grafana to be ready..."
-    wait_for_condition "kubectl get pods -n grafana -o jsonpath='{.items[*].status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
+    # echo "Waiting for Grafana to be ready..."
+    # wait_for_condition "kubectl get pods -n grafana -o jsonpath='{.items[*].status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
 
-    kubectl get pods -n grafana
+    # kubectl get pods -n grafana
 
-    # Настройка источника данных для Grafana
-    echo "Configuring Grafana datasource..."
-#     cat <<EOF | kubectl apply -f -
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: grafana-datasource
-#   namespace: grafana
-#   labels:
-#     grafana_datasource: "1"
-# data:
-#   prometheus.yaml: |-
-#     apiVersion: 1
-#     datasources:
-#       - name: Prometheus
-#         type: prometheus
-#         access: proxy
-#         url: http://prometheus-server.monitoring.svc.cluster.local
-#         isDefault: true
-# EOF
+    # echo "Configuring Grafana datasource..."
 
-    echo "Grafana setup is complete. Access it at http://$PUBLIC_IP:3000"
+    # echo "Grafana setup is complete. Access it at http://$PUBLIC_IP:3000"
 else
     echo "yum or curl is not available, aborting."
     exit 1

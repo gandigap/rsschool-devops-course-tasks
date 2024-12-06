@@ -252,3 +252,28 @@ Description: Tracks the number of times a container has restarted.
 Why it's needed: High restart counts can indicate unstable pods or misconfigured applications.
 
 [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/metric-5.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/metric-5.png)
+
+## Task 8
+
+  - Complete command in terminal `terraform apply`
+  - Connect to k3s_server jenkins use terminal command `ssh k3s_server`
+  - Check logs `sudo cat /var/log/cloud-init-output.log` 
+
+I made 2 options for unfolding grafana on k3s: 
+
+1. From this repository in k3s_server.sh 
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-1.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-1.png)
+ 
+Open url for example `http://51.20.192.120:3000/` and set credentials : login `admin` password `GrafanaAdminPassword`
+
+2. From custom helm chart in https://github.com/gandigap/rs_devops_wordpress/pull/2 where i did the same actions for task-5 with wordpress, but changed for grafana
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-4.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-4.png)
+
+Open url for example `http://51.20.192.120:3000/` and set credentials : login `admin` password `admin`
+
+Additionals screenshots 
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-2.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-2.png)
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-3.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-3.png)
