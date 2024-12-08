@@ -273,8 +273,17 @@ Open url for example `http://51.20.192.120:3000/` and set credentials : login `a
 
 Open url for example `http://16.16.66.181:3000//` and set credentials : login `admin` password from github secrets `GRAFANA_ADMIN_PASSWORD`
 
-Additionals screenshots 
+#### Additionals screenshots 
 
 [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-2.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-2.png)
 [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-3.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-3.png)
 [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-5.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-5.png)
+
+#### Metrics 
+Disk Space Usage - (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100
+
+Memory Utilization - (node_memory_MemTotal_bytes - node_memory_MemFree_bytes) / node_memory_MemTotal_bytes * 100
+
+CPU Usage - 100 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-6.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-6.png)

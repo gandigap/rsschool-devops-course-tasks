@@ -25,7 +25,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ae6858isa9iiof"
+        "uid": "be6acrt9f9jwge"
       },
       "fieldConfig": {
         "defaults": {
@@ -106,16 +106,50 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ae6858isa9iiof"
+            "uid": "be6acrt9f9jwge"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) by (instance)",
+          "expr": "(node_memory_MemTotal_bytes - node_memory_MemFree_bytes) / node_memory_MemTotal_bytes * 100",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "be6acrt9f9jwge"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "100 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "be6acrt9f9jwge"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "(node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "C",
           "useBackend": false
         }
       ],
@@ -132,7 +166,7 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "New dashboard",
-  "uid": "fe685weu4olq8c",
+  "uid": "ae6adpmwkw3y8e",
   "version": 1,
   "weekStart": ""
 }
