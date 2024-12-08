@@ -203,3 +203,52 @@ Host k3s_agent
 4. Success deploy
 
 [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-4.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-6/screenshots/task-6/kubectl-deploy-4.png)
+
+
+ ## Task 7
+   - Complete command `terraform apply` and connect to instance after change .ssh/config `ssh k3s_server`
+   - Check logs complete command `sudo cat /var/log/cloud-init-output.log`  with Prometheus pods
+   - in terminal complete port forward for example `kubectl port-forward -n monitoring prometheus-server-6d5b6c7bdd-vcqrv 9090:9090` and `ssh -L 9090:localhost:9090 k3s_server`
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/prometheus-pods-and-connect.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/prometheus-pods-and-connect.png)
+
+  - Open browser `http://localhost:9090/targets` and check access
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/prometheus-targets.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/prometheus-targets.png)
+
+  ### Main metrics
+
+  - Metric-1 - `node_memory_Active_bytes`
+
+Description: The amount of active memory on a node in bytes.
+Why it's needed: Shows how efficiently memory is being used at the node level. Helps prevent situations where a node runs out of memory.
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/metric-1.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/metric-1.png)
+  
+  - Metric-2 - `node_cpu_seconds_total`
+
+Description: Total seconds that the CPU has been in use.
+Why it's needed: Indicates the CPU load on a node. Useful for analyzing performance and planning scaling.
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/metric-2.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/metric-2.png)
+  
+  - Metric-3 - `kube_pod_status_phase`
+
+Description: Displays the current status of pods in the cluster (Running, Pending, Failed, etc.).
+Why it's needed: Allows you to monitor the number of pods in each state and quickly detect issues.
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/metric-3.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/metric-3.png)
+  
+  - Metric-4 - `node_network_receive_bytes_total`
+
+Description: Tracks the total number of bytes received and transmitted over the network interface.
+Why it's needed: Helps detect network bottlenecks or unusual traffic patterns that could indicate issues or attacks.
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/metric-4.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/metric-4.png)
+
+  - Metric-5 - `kube_pod_container_status_restarts_total`
+
+Description: Tracks the number of times a container has restarted.
+Why it's needed: High restart counts can indicate unstable pods or misconfigured applications.
+
+[![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/metric-5.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-7/screenshots/task-7/metric-5.png)

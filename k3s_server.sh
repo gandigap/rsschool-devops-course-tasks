@@ -57,7 +57,7 @@ if command -v yum &>/dev/null && command -v curl &>/dev/null; then
     sudo systemctl status k3s
 
     wait_for_condition "kubectl cluster-info &>/dev/null" $max_attempts
-
+  
     curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     command -v helm &>/dev/null || { echo "Helm installation failed."; exit 1; }
 
@@ -123,11 +123,33 @@ EOF
     kubectl get svc -n jenkins
     echo "Jenkins is accessible at http://$PUBLIC_IP:8080"
 
-    # Получение пароля администратора
+
     JENKINS_PASSWORD=$(kubectl exec -n jenkins svc/my-jenkins -c jenkins -- cat /run/secrets/additional/chart-admin-password)
     [ -n "$JENKINS_PASSWORD" ] && echo "Jenkins admin password: $JENKINS_PASSWORD" || { echo "Failed to retrieve Jenkins admin password."; exit 1; }
 
     echo "Fetching job log..."
+
+   
+    echo "Installing Prometheus using Bitnami Helm chart..."
+    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    helm repo update
+
+    kubectl create namespace monitoring || echo "Namespace monitoring already exists."
+
+    helm install prometheus prometheus-community/prometheus \
+        --namespace monitoring \
+        --set server.service.type=ClusterIP \
+        --set alertmanager.service.type=ClusterIP \
+        --set pushgateway.service.type=ClusterIP
+
+    echo "Waiting for Prometheus to be ready..."
+    wait_for_condition "kubectl get pods -n monitoring -o jsonpath='{.items[*].status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
+
+    kubectl get pods -n monitoring
+
+    PROMETHEUS_POD=$(kubectl get pods -n monitoring -l app.kubernetes.io/component=server -o jsonpath='{.items[0].metadata.name}')
+    echo "To access Prometheus web interface, run:"
+
 else
     echo "yum or curl is not available, aborting."
     exit 1
