@@ -6,7 +6,7 @@ on:
       - main
   push:
     branches:
-      - task-7
+      - task-8
 
 env:
   TF_VAR_token: ${{ vars.TOKEN }}
@@ -40,7 +40,7 @@ jobs:
           terraform_version: ${{ env.TERRAFORM_VERSION }} # Add version flexibility
       
       - name: Terraform init # S3 backend init     
-        run: terraform init
+        run: terraform init -reconfigure
 
       - name: Create terraform cache
         uses: actions/cache/save@v4
@@ -51,48 +51,10 @@ jobs:
       - name: Terraform Check
         run: terraform fmt -check
 
-  terraform_plan:
-    runs-on: ubuntu-latest
-    needs: terraform_check
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: ${{ env.REGION  }}
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.GHA_ROLE }}
-
-      - name: Restore terraform cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .terraform*
-          key: terraform-cache-${{ runner.os }}-${{ github.run_id }}
-          fail-on-cache-miss: true
-
       - name: Terraform Plan
         run: terraform plan -input=false
 
-  terraform_apply:
-    runs-on: ubuntu-latest
-    needs: terraform_plan
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: ${{ env.REGION  }}
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.GHA_ROLE }}
-
-      - name: Restore terraform cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .terraform*
-          key: terraform-cache-${{ runner.os }}-${{ github.run_id }}
-          fail-on-cache-miss: true
-
       - name: Terraform Apply
         run: terraform apply -auto-approve
+
+  
