@@ -287,3 +287,10 @@ Memory Utilization - (node_memory_MemTotal_bytes - node_memory_MemFree_bytes) / 
 CPU Usage - 100 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100
 
 [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-6.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-6.png)
+
+## Task 8
+
+  - Complete command in terminal `terraform apply`
+  - Connect to k3s_server jenkins use terminal command `ssh k3s_server`
+  - Check logs `sudo cat /var/log/cloud-init-output.log` 
+  - Check grafana password `echo $(kubectl get secret grafana-admin -n grafana -o jsonpath="{.data.GF_SECURITY_ADMIN_PASSWORD}" | base64 --decode)` 

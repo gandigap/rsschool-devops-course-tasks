@@ -149,16 +149,21 @@ EOF
     echo "Waiting Grafana using Bitnami Helm chart..."
     kubectl create namespace grafana || echo "Namespace grafana already exists."
 
-    helm repo add grafana https://grafana.github.io/helm-charts
-    helm repo update
-
-    helm install grafana grafana/grafana \
-        --namespace grafana \
-        --set persistence.enabled=true \
-        --set persistence.size=2Gi \
-        --set adminPassword='GrafanaAdminPassword' \
-        --set service.type=LoadBalancer \
-        --set service.port=3000 
+   helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
+    --namespace grafana \
+    --create-namespace \
+    --set persistence.enabled=true \
+    --set persistence.size=2Gi \
+    --set adminPassword='GrafanaAdminPassword' \
+    --set service.type=LoadBalancer \
+    --set service.port=3000 \
+    --set smtp.enabled=true \
+    --set smtp.host="email-smtp.eu-north-1.amazonaws.com:587" \
+    --set smtp.user="" \
+    --set smtp.password="" \
+    --set smtp.fromAddress="" \
+    --set smtp.fromName="Grafana" \
+    --set smtp.skipVerify=true
 
     echo "Waiting for Grafana to be ready..."
     wait_for_condition "kubectl get pods -n grafana -o jsonpath='{.items[*].status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
