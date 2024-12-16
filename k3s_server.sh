@@ -66,7 +66,7 @@ if command -v yum &>/dev/null && command -v curl &>/dev/null; then
     kubectl get pods --namespace default
     helm uninstall my-nginx --namespace default
 
-    kubectl create namespace jenkins || echo "Namespace jenkins already exists."
+    # kubectl create namespace jenkins || echo "Namespace jenkins already exists."
 
     # Проверка StorageClass и создание по умолчанию
     kubectl get storageclass &>/dev/null || {
@@ -81,51 +81,51 @@ volumeBindingMode: WaitForFirstConsumer
 EOF
     }
 
-    # Создание PersistentVolumeClaim
-    echo "Creating PersistentVolumeClaim for Jenkins..."
-    cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: jenkins-pvc
-  namespace: jenkins
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
-  storageClassName: local-path
-EOF
+#     # Создание PersistentVolumeClaim
+#     echo "Creating PersistentVolumeClaim for Jenkins..."
+#     cat <<EOF | kubectl apply -f -
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: jenkins-pvc
+#   namespace: jenkins
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 2Gi
+#   storageClassName: local-path
+# EOF
 
-    helm repo add jenkins https://charts.jenkins.io
-    helm repo update
-    helm search repo jenkins
-    echo "Start jenkins install"
-    helm install my-jenkins jenkins/jenkins \
-        --namespace jenkins \
-        --set persistence.enabled=true \
-        --set persistence.existingClaim=jenkins-pvc \
-        --set controller.debug=true \
-        --set service.type=LoadBalancer \
-        --set controller.containerSecurityContext.readOnlyRootFilesystem=false
+#     helm repo add jenkins https://charts.jenkins.io
+#     helm repo update
+#     helm search repo jenkins
+#     echo "Start jenkins install"
+#     helm install my-jenkins jenkins/jenkins \
+#         --namespace jenkins \
+#         --set persistence.enabled=true \
+#         --set persistence.existingClaim=jenkins-pvc \
+#         --set controller.debug=true \
+#         --set service.type=LoadBalancer \
+#         --set controller.containerSecurityContext.readOnlyRootFilesystem=false
 
-    echo "Waiting for Jenkins to be ready..."
-    wait_for_condition "kubectl get pod my-jenkins-0 -n jenkins -o jsonpath='{.status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
+#     echo "Waiting for Jenkins to be ready..."
+#     wait_for_condition "kubectl get pod my-jenkins-0 -n jenkins -o jsonpath='{.status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
 
-    kubectl get pods -n jenkins
+#     kubectl get pods -n jenkins
 
     # Получаем внешний IP и порт
     PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
     echo "Public IP: $PUBLIC_IP"
-    kubectl patch svc my-jenkins -n jenkins -p '{"spec": {"type": "LoadBalancer"}}'
+    # kubectl patch svc my-jenkins -n jenkins -p '{"spec": {"type": "LoadBalancer"}}'
 
-    kubectl get svc -n jenkins
+    # kubectl get svc -n jenkins
     echo "Jenkins is accessible at http://$PUBLIC_IP:8080"
 
 
-    JENKINS_PASSWORD=$(kubectl exec -n jenkins svc/my-jenkins -c jenkins -- cat /run/secrets/additional/chart-admin-password)
-    [ -n "$JENKINS_PASSWORD" ] && echo "Jenkins admin password: $JENKINS_PASSWORD" || { echo "Failed to retrieve Jenkins admin password."; exit 1; }
+    # JENKINS_PASSWORD=$(kubectl exec -n jenkins svc/my-jenkins -c jenkins -- cat /run/secrets/additional/chart-admin-password)
+    # [ -n "$JENKINS_PASSWORD" ] && echo "Jenkins admin password: $JENKINS_PASSWORD" || { echo "Failed to retrieve Jenkins admin password."; exit 1; }
 
     echo "Fetching job log..."
 
@@ -146,28 +146,36 @@ EOF
 
     kubectl get pods -n monitoring
 
-    # echo "Waiting Grafana using Bitnami Helm chart..."
-    # kubectl create namespace grafana || echo "Namespace grafana already exists."
+#     echo "Waiting Grafana using Bitnami Helm chart..."
+#     kubectl create namespace grafana || echo "Namespace grafana already exists."
 
-    # helm repo add grafana https://grafana.github.io/helm-charts
-    # helm repo update
+#    helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
+#     --namespace grafana \
+#     --create-namespace \
+#     --set persistence.enabled=true \
+#     --set persistence.size=2Gi \
+#     --set adminPassword='GrafanaAdminPassword' \
+#     --set service.type=LoadBalancer \
+#     --set service.port=3000 \
+#     --set smtp.enabled=true \
+#     --set smtp.host="email-smtp.eu-north-1.amazonaws.com:587" \
+#     --set smtp.user="" \
+#     --set smtp.password="" \
+#     --set smtp.fromAdsress="" \
+#     --set smtp.fromName="Grafana" \
+#     --set smtp.skipVerify=true
 
-    # helm install grafana grafana/grafana \
-    #     --namespace grafana \
-    #     --set persistence.enabled=true \
-    #     --set persistence.size=2Gi \
-    #     --set adminPassword='GrafanaAdminPassword' \
-    #     --set service.type=LoadBalancer \
-    #     --set service.port=3000
+#     echo "Waiting for Grafana to be ready..."
+#     wait_for_condition "kubectl get pods -n grafana -o jsonpath='{.items[*].status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
 
-    # echo "Waiting for Grafana to be ready..."
-    # wait_for_condition "kubectl get pods -n grafana -o jsonpath='{.items[*].status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
+#     kubectl get pods -n grafana
 
-    # kubectl get pods -n grafana
-
-    # echo "Configuring Grafana datasource..."
+    echo "Configuring Grafana datasource..."
 
     # echo "Grafana setup is complete. Access it at http://$PUBLIC_IP:3000"
+
+
+    # MAIN CONFIG FOR GRAFANA here https://github.com/gandigap/rs_devops_wordpress/pull/3/files#diff-b59c4f6be982b51e8618d8fd1f88984eec3fe3d6b05150a0f14b344fa1ab78ff
 else
     echo "yum or curl is not available, aborting."
     exit 1

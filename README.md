@@ -287,3 +287,22 @@ Memory Utilization - (node_memory_MemTotal_bytes - node_memory_MemFree_bytes) / 
 CPU Usage - 100 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100
 
 [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-6.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-6.png)
+
+## Task 9
+
+  - Complete command in terminal `terraform apply`
+  - Connect to k3s_server jenkins use terminal command `ssh k3s_server`
+  - Clone and run actions form branch task-9  from repository https://github.com/gandigap/rs_devops_wordpress/tree/task-9
+  - Check logs `sudo cat /var/log/cloud-init-output.log` 
+  - Check grafana password `echo $(kubectl get secret grafana-admin -n grafana -o jsonpath="{.data.GF_SECURITY_ADMIN_PASSWORD}" | base64 --decode)` 
+  - Open grafana config and check in UI (Data source, contact points)
+  - Create dashboards and add alert rules like me provide on screenshots for metrics
+    For memory`(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100` 
+    For CPU `100 - (avg by (instance)(irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)`
+  - Install stress 
+    `sudo amazon-linux-extras install epel -y`
+    `sudo yum install stress -y`
+  - Run stress 
+    For cpu `stress --cpu 2 --timeout 2m`
+    For memory `stress --vm 1 --vm-bytes 1G --timeout 5m`
+  - Check email from contact points
