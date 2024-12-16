@@ -146,33 +146,36 @@ EOF
 
     kubectl get pods -n monitoring
 
-    echo "Waiting Grafana using Bitnami Helm chart..."
-    kubectl create namespace grafana || echo "Namespace grafana already exists."
+#     echo "Waiting Grafana using Bitnami Helm chart..."
+#     kubectl create namespace grafana || echo "Namespace grafana already exists."
 
-   helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
-    --namespace grafana \
-    --create-namespace \
-    --set persistence.enabled=true \
-    --set persistence.size=2Gi \
-    --set adminPassword='GrafanaAdminPassword' \
-    --set service.type=LoadBalancer \
-    --set service.port=3000 \
-    --set smtp.enabled=true \
-    --set smtp.host="email-smtp.eu-north-1.amazonaws.com:587" \
-    --set smtp.user="" \
-    --set smtp.password="" \
-    --set smtp.fromAddress="" \
-    --set smtp.fromName="Grafana" \
-    --set smtp.skipVerify=true
+#    helm upgrade --install grafana oci://registry-1.docker.io/bitnamicharts/grafana \
+#     --namespace grafana \
+#     --create-namespace \
+#     --set persistence.enabled=true \
+#     --set persistence.size=2Gi \
+#     --set adminPassword='GrafanaAdminPassword' \
+#     --set service.type=LoadBalancer \
+#     --set service.port=3000 \
+#     --set smtp.enabled=true \
+#     --set smtp.host="email-smtp.eu-north-1.amazonaws.com:587" \
+#     --set smtp.user="" \
+#     --set smtp.password="" \
+#     --set smtp.fromAdsress="" \
+#     --set smtp.fromName="Grafana" \
+#     --set smtp.skipVerify=true
 
-    echo "Waiting for Grafana to be ready..."
-    wait_for_condition "kubectl get pods -n grafana -o jsonpath='{.items[*].status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
+#     echo "Waiting for Grafana to be ready..."
+#     wait_for_condition "kubectl get pods -n grafana -o jsonpath='{.items[*].status.containerStatuses[*].ready}' | grep -q 'true true'" $max_attempts
 
-    kubectl get pods -n grafana
+#     kubectl get pods -n grafana
 
     echo "Configuring Grafana datasource..."
 
-    echo "Grafana setup is complete. Access it at http://$PUBLIC_IP:3000"
+    # echo "Grafana setup is complete. Access it at http://$PUBLIC_IP:3000"
+
+
+    # MAIN CONFIG FOR GRAFANA here https://github.com/gandigap/rs_devops_wordpress/pull/3/files#diff-b59c4f6be982b51e8618d8fd1f88984eec3fe3d6b05150a0f14b344fa1ab78ff
 else
     echo "yum or curl is not available, aborting."
     exit 1

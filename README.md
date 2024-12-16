@@ -288,7 +288,7 @@ CPU Usage - 100 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100
 
 [![N|](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-6.png)](https://github.com/gandigap/rsschool-devops-course-tasks/blob/task-8/screenshots/task-8/grafana-6.png)
 
-## Task 8
+## Task 9
 
   - Complete command in terminal `terraform apply`
   - Connect to k3s_server jenkins use terminal command `ssh k3s_server`
